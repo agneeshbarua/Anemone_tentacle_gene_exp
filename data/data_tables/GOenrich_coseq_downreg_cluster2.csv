@@ -1,0 +1,299 @@
+GOBPID,FDR,Term,Size
+GO:0006081,1.1069782449641502e-26,cellular aldehyde metabolic process,18
+GO:0009636,8.399623232034095e-21,response to toxic substance,27
+GO:0098754,8.399623232034095e-21,detoxification,27
+GO:0097237,8.399623232034095e-21,cellular response to toxic substance,27
+GO:1990748,8.399623232034095e-21,cellular detoxification,27
+GO:0044248,7.351671208527442e-16,cellular catabolic process,909
+GO:0034637,1.1292715645047717e-15,cellular carbohydrate biosynthetic process,38
+GO:0009056,5.2349266908032316e-14,catabolic process,1013
+GO:0110095,1.807762173069279e-13,cellular detoxification of aldehyde,9
+GO:0110096,1.807762173069279e-13,cellular response to aldehyde,9
+GO:0006011,1.807762173069279e-13,UDP-glucose metabolic process,9
+GO:0042743,1.807762173069279e-13,hydrogen peroxide metabolic process,9
+GO:0042744,1.807762173069279e-13,hydrogen peroxide catabolic process,9
+GO:0046185,1.807762173069279e-13,aldehyde catabolic process,9
+GO:0046292,1.807762173069279e-13,formaldehyde metabolic process,9
+GO:0046294,1.807762173069279e-13,formaldehyde catabolic process,9
+GO:0044281,2.1523389064657072e-13,small molecule metabolic process,816
+GO:0016051,6.981371049969171e-13,carbohydrate biosynthetic process,55
+GO:0061919,7.092466881571068e-13,process utilizing autophagic mechanism,168
+GO:0006914,7.092466881571068e-13,autophagy,168
+GO:0044282,7.30096925770934e-13,small molecule catabolic process,155
+GO:0030111,3.3328912324491607e-12,regulation of Wnt signaling pathway,70
+GO:0051962,3.3328912324491607e-12,positive regulation of nervous system development,8
+GO:0006020,3.3328912324491607e-12,inositol metabolic process,8
+GO:0006021,3.3328912324491607e-12,inositol biosynthetic process,8
+GO:0043392,3.3328912324491607e-12,negative regulation of DNA binding,8
+GO:0032480,3.3328912324491607e-12,negative regulation of type I interferon production,8
+GO:1903828,3.3328912324491607e-12,negative regulation of cellular protein localization,8
+GO:0032720,3.3328912324491607e-12,negative regulation of tumor necrosis factor production,8
+GO:1903556,3.3328912324491607e-12,negative regulation of tumor necrosis factor superfamily cytokine production,8
+GO:0010720,3.3328912324491607e-12,positive regulation of cell development,8
+GO:1900181,3.3328912324491607e-12,negative regulation of protein localization to nucleus,8
+GO:0051101,3.3328912324491607e-12,regulation of DNA binding,8
+GO:0050769,3.3328912324491607e-12,positive regulation of neurogenesis,8
+GO:0009133,1.1950663314946285e-10,nucleoside diphosphate biosynthetic process,7
+GO:0007528,1.1950663314946285e-10,neuromuscular junction development,7
+GO:0030329,1.1950663314946285e-10,prenylcysteine metabolic process,7
+GO:0051100,1.2817308264498167e-10,negative regulation of binding,10
+GO:0048585,1.4714333728547115e-10,negative regulation of response to stimulus,183
+GO:0050687,3.966761381530119e-10,negative regulation of defense response to virus,11
+GO:0050688,3.966761381530119e-10,regulation of defense response to virus,11
+GO:0002832,3.966761381530119e-10,negative regulation of response to biotic stimulus,11
+GO:0031348,3.966761381530119e-10,negative regulation of defense response,11
+GO:0050777,3.966761381530119e-10,negative regulation of immune response,11
+GO:1900180,1.137198782453301e-9,regulation of protein localization to nucleus,12
+GO:1902221,1.1925453869222056e-9,erythrose 4-phosphate/phosphoenolpyruvate family amino acid metabolic process,17
+GO:1902222,1.1925453869222056e-9,erythrose 4-phosphate/phosphoenolpyruvate family amino acid catabolic process,17
+GO:0006558,1.1925453869222056e-9,L-phenylalanine metabolic process,17
+GO:0006570,1.1925453869222056e-9,tyrosine metabolic process,17
+GO:0098869,2.2839717557666314e-9,cellular oxidant detoxification,18
+GO:0060284,2.5006896933815466e-9,regulation of cell development,13
+GO:0050767,2.5006896933815466e-9,regulation of neurogenesis,13
+GO:0006793,2.9452252366192033e-9,phosphorus metabolic process,1654
+GO:0030327,3.182408309030451e-9,prenylated protein catabolic process,6
+GO:0021591,1.1090037074472178e-8,ventricular system development,15
+GO:0046173,1.1090037074472178e-8,polyol biosynthetic process,15
+GO:0032479,2.0575291967382605e-8,regulation of type I interferon production,16
+GO:0051098,2.0575291967382605e-8,regulation of binding,16
+GO:0032606,2.0575291967382605e-8,type I interferon production,16
+GO:0044262,2.80993429309257e-8,cellular carbohydrate metabolic process,109
+GO:0003356,3.614612912475139e-8,regulation of cilium beat frequency,17
+GO:0036158,3.614612912475139e-8,outer dynein arm assembly,17
+GO:0006662,4.1130683311743476e-8,glycerol ether metabolic process,24
+GO:0018904,4.1130683311743476e-8,ether metabolic process,24
+GO:0006979,4.1130683311743476e-8,response to oxidative stress,24
+GO:0051960,5.669402889991726e-8,regulation of nervous system development,18
+GO:0003352,5.669402889991726e-8,regulation of cilium movement,18
+GO:0140546,5.669402889991726e-8,defense response to symbiont,18
+GO:0051607,5.669402889991726e-8,defense response to virus,18
+GO:0009895,5.669402889991726e-8,negative regulation of catabolic process,25
+GO:0031330,5.669402889991726e-8,negative regulation of cellular catabolic process,25
+GO:0010507,5.669402889991726e-8,negative regulation of autophagy,25
+GO:0055086,5.9343918472131426e-8,nucleobase-containing small molecule metabolic process,249
+GO:0009072,8.134016864224763e-8,aromatic amino acid family metabolic process,26
+GO:0009074,8.134016864224763e-8,aromatic amino acid family catabolic process,26
+GO:0016055,8.618470693095381e-8,Wnt signaling pathway,134
+GO:1905114,8.618470693095381e-8,cell surface receptor signaling pathway involved in cell-cell signaling,134
+GO:0009250,1.0904792720569212e-7,glucan biosynthetic process,27
+GO:0009225,1.0904792720569212e-7,nucleotide-sugar metabolic process,27
+GO:0000271,1.0904792720569212e-7,polysaccharide biosynthetic process,27
+GO:0033692,1.0904792720569212e-7,cellular polysaccharide biosynthetic process,27
+GO:0005978,1.0904792720569212e-7,glycogen biosynthetic process,27
+GO:0045746,1.260656707054597e-7,negative regulation of Notch signaling pathway,20
+GO:0002683,1.260656707054597e-7,negative regulation of immune system process,20
+GO:0032102,1.260656707054597e-7,negative regulation of response to external stimulus,20
+GO:0034656,1.260656707054597e-7,nucleobase-containing small molecule catabolic process,20
+GO:0198738,1.5371649791330692e-7,cell-cell signaling by wnt,140
+GO:0071706,1.8405418371442773e-7,tumor necrosis factor superfamily cytokine production,21
+GO:0001818,1.8405418371442773e-7,negative regulation of cytokine production,21
+GO:0045597,1.8405418371442773e-7,positive regulation of cell differentiation,21
+GO:1903555,1.8405418371442773e-7,regulation of tumor necrosis factor superfamily cytokine production,21
+GO:0032680,1.8405418371442773e-7,regulation of tumor necrosis factor production,21
+GO:0032640,1.8405418371442773e-7,tumor necrosis factor production,21
+GO:0044237,1.8485705978911432e-7,cellular metabolic process,5419
+GO:0019637,2.2357334795733832e-7,organophosphate metabolic process,437
+GO:0060632,2.7384926827164296e-7,regulation of microtubule-based movement,22
+GO:0042219,4.2530544684765746e-7,cellular modified amino acid catabolic process,16
+GO:0008152,4.687512242173818e-7,metabolic process,5894
+GO:0070286,8.302199841811675e-7,axonemal dynein complex assembly,25
+GO:0035082,8.302199841811675e-7,axoneme assembly,25
+GO:0051239,8.531551238366077e-7,regulation of multicellular organismal process,141
+GO:0072593,1.0981224119722384e-6,reactive oxygen species metabolic process,35
+GO:0006796,1.1444404494008385e-6,phosphate-containing compound metabolic process,1618
+GO:0008593,1.5653422805068896e-6,regulation of Notch signaling pathway,27
+GO:0009968,2.185894096747503e-6,negative regulation of signal transduction,151
+GO:0010648,2.185894096747503e-6,negative regulation of cell communication,151
+GO:0023057,2.185894096747503e-6,negative regulation of signaling,151
+GO:0050808,2.3645862520267932e-6,synapse organization,20
+GO:0019439,3.3355199449868616e-6,aromatic compound catabolic process,192
+GO:1901361,3.3355199449868616e-6,organic cyclic compound catabolic process,192
+GO:0030177,3.451451336598617e-6,positive regulation of Wnt signaling pathway,40
+GO:0030178,3.451451336598617e-6,negative regulation of Wnt signaling pathway,40
+GO:0051094,3.546449186392503e-6,positive regulation of developmental process,30
+GO:1901701,4.245665723500758e-6,cellular response to oxygen-containing compound,41
+GO:1901293,4.353868481650528e-6,nucleoside phosphate biosynthetic process,125
+GO:0007267,4.626092584868324e-6,cell-cell signaling,216
+GO:0090407,5.7440002235230005e-6,organophosphate biosynthetic process,280
+GO:0009615,5.8307365138154595e-6,response to virus,32
+GO:0002831,7.2542265796798124e-6,regulation of response to biotic stimulus,33
+GO:0019751,7.2542265796798124e-6,polyol metabolic process,33
+GO:0006066,7.2542265796798124e-6,alcohol metabolic process,56
+GO:1901615,7.2542265796798124e-6,organic hydroxy compound metabolic process,56
+GO:0046856,7.2542265796798124e-6,phosphatidylinositol dephosphorylation,44
+GO:0098542,7.2542265796798124e-6,defense response to other organism,44
+GO:0010506,7.2542265796798124e-6,regulation of autophagy,44
+GO:0051241,7.2542265796798124e-6,negative regulation of multicellular organismal process,44
+GO:0001578,8.934101959941559e-6,microtubule bundle formation,34
+GO:1901700,1.0598091734397616e-5,response to oxygen-containing compound,46
+GO:0035721,1.0891137857399224e-5,intraciliary retrograde transport,25
+GO:0031347,1.0891137857399224e-5,regulation of defense response,35
+GO:1901617,1.0891137857399224e-5,organic hydroxy compound biosynthetic process,35
+GO:0046165,1.0891137857399224e-5,alcohol biosynthetic process,35
+GO:1901575,1.540026813742228e-5,organic substance catabolic process,849
+GO:0090503,1.6814117315179993e-5,"RNA phosphodiester bond hydrolysis, exonucleolytic",37
+GO:0070887,1.963861505570112e-5,cellular response to chemical stimulus,199
+GO:0046839,3.415722672240708e-5,phospholipid dephosphorylation,53
+GO:0051240,4.453640111147365e-5,positive regulation of multicellular organismal process,42
+GO:2000026,4.453640111147365e-5,regulation of multicellular organismal development,42
+GO:0007369,6.188852029986343e-5,gastrulation,57
+GO:0030330,7.768648565243022e-5,"DNA damage response, signal transduction by p53 class mediator",14
+GO:0072331,7.768648565243022e-5,signal transduction by p53 class mediator,14
+GO:0003341,8.73543298351379e-5,cilium movement,46
+GO:0006644,8.836324256907985e-5,phospholipid metabolic process,202
+GO:0015985,8.913220414142223e-5,"energy coupled proton transport, down electrochemical gradient",34
+GO:0006754,8.913220414142223e-5,ATP biosynthetic process,34
+GO:0007178,9.037687405564307e-5,transmembrane receptor protein serine/threonine kinase signaling pathway,60
+GO:0001816,9.873273463792263e-5,cytokine production,47
+GO:0001817,9.873273463792263e-5,regulation of cytokine production,47
+GO:0007166,1.0085081149362836e-4,cell surface receptor signaling pathway,434
+GO:0006952,1.0085081149362836e-4,defense response,61
+GO:1903827,1.1351323536500586e-4,regulation of cellular protein localization,48
+GO:0006073,1.2560517148444648e-4,cellular glucan metabolic process,63
+GO:0044264,1.2560517148444648e-4,cellular polysaccharide metabolic process,63
+GO:0006112,1.2560517148444648e-4,energy reserve metabolic process,63
+GO:0044042,1.2560517148444648e-4,glucan metabolic process,63
+GO:0005976,1.2560517148444648e-4,polysaccharide metabolic process,63
+GO:0005977,1.2560517148444648e-4,glycogen metabolic process,63
+GO:0006260,1.2673611624863684e-4,DNA replication,49
+GO:0009607,1.384361080537344e-4,response to biotic stimulus,64
+GO:0043207,1.384361080537344e-4,response to external biotic stimulus,64
+GO:0046034,1.384361080537344e-4,ATP metabolic process,64
+GO:0051707,1.384361080537344e-4,response to other organism,64
+GO:0007219,1.4296011873538687e-4,Notch signaling pathway,50
+GO:0048523,1.4691292155176677e-4,negative regulation of cellular process,682
+GO:0071704,1.8198921964359408e-4,organic substance metabolic process,5472
+GO:0042770,1.9113798131967826e-4,signal transduction in response to DNA damage,17
+GO:0007018,2.041708134225002e-4,microtubule-based movement,177
+GO:0009141,2.041708134225002e-4,nucleoside triphosphate metabolic process,53
+GO:0009142,2.041708134225002e-4,nucleoside triphosphate biosynthetic process,53
+GO:0009144,2.041708134225002e-4,purine nucleoside triphosphate metabolic process,53
+GO:0009145,2.041708134225002e-4,purine nucleoside triphosphate biosynthetic process,53
+GO:0009201,2.041708134225002e-4,ribonucleoside triphosphate biosynthetic process,53
+GO:0009205,2.041708134225002e-4,purine ribonucleoside triphosphate metabolic process,53
+GO:0009206,2.041708134225002e-4,purine ribonucleoside triphosphate biosynthetic process,53
+GO:0032880,2.041708134225002e-4,regulation of protein localization,53
+GO:0009199,2.041708134225002e-4,ribonucleoside triphosphate metabolic process,53
+GO:0044782,2.1389571853660903e-4,cilium organization,178
+GO:0016236,2.3036881186474487e-4,macroautophagy,69
+GO:0045595,2.3036881186474487e-4,regulation of cell differentiation,54
+GO:0007420,2.577671011975821e-4,brain development,55
+GO:0032886,2.577671011975821e-4,regulation of microtubule-based process,55
+GO:0090501,2.577671011975821e-4,RNA phosphodiester bond hydrolysis,55
+GO:0051270,2.577671011975821e-4,regulation of cellular component movement,55
+GO:0006753,3.118948080091952e-4,nucleoside phosphate metabolic process,206
+GO:1902600,3.118948080091952e-4,proton transmembrane transport,72
+GO:0009063,3.4398505448234766e-4,cellular amino acid catabolic process,73
+GO:1901606,3.4398505448234766e-4,alpha-amino acid catabolic process,73
+GO:0032101,4.707153004974414e-4,regulation of response to external stimulus,60
+GO:0050776,5.913090303960897e-4,regulation of immune response,62
+GO:0007399,6.87148632037064e-4,nervous system development,267
+GO:0032879,9.695648170770512e-4,regulation of localization,228
+GO:0044419,9.835121864976628e-4,biological process involved in interspecies interaction between organisms,84
+GO:0034330,9.835121864976628e-4,cell junction organization,51
+GO:0006950,9.835121864976628e-4,response to stress,505
+GO:0005975,9.884664597973516e-4,carbohydrate metabolic process,252
+GO:0007417,0.0010826914589066035,central nervous system development,68
+GO:0060322,0.0010826914589066035,head development,68
+GO:0006955,0.001143288730051149,immune response,86
+GO:0034504,0.001185254917313486,protein localization to nucleus,69
+GO:0006575,0.001358446389361719,cellular modified amino acid metabolic process,54
+GO:0009132,0.0014270876806414812,nucleoside diphosphate metabolic process,71
+GO:0033306,0.0018204149352333387,phytol metabolic process,2
+GO:1903173,0.0018204149352333387,fatty alcohol metabolic process,2
+GO:1903725,0.0018204149352333387,regulation of phospholipid metabolic process,2
+GO:0060012,0.0018204149352333387,"synaptic transmission, glycinergic",2
+GO:0010922,0.0018204149352333387,positive regulation of phosphatase activity,2
+GO:0060304,0.0018204149352333387,regulation of phosphatidylinositol dephosphorylation,2
+GO:0042073,0.0018235798780284617,intraciliary transport,57
+GO:0030258,0.0019311959567846011,lipid modification,93
+GO:0120036,0.0023121689100872775,plasma membrane bounded cell projection organization,249
+GO:0048519,0.0025867331864485687,negative regulation of biological process,830
+GO:0051726,0.0029888887221846804,regulation of cell cycle,99
+GO:0002682,0.003519575971867142,regulation of immune system process,82
+GO:0030030,0.0035775587294221193,cell projection organization,260
+GO:0009799,0.0040394892334216,specification of symmetry,84
+GO:0009855,0.0040394892334216,determination of bilateral symmetry,84
+GO:0007368,0.0040394892334216,determination of left/right symmetry,84
+GO:0031647,0.004725634464737858,regulation of protein stability,10
+GO:0060341,0.004981060255883159,regulation of cellular localization,87
+GO:0034308,0.004981060255883159,primary alcohol metabolic process,3
+GO:0006721,0.004981060255883159,terpenoid metabolic process,3
+GO:0016101,0.004981060255883159,diterpenoid metabolic process,3
+GO:0043928,0.004981060255883159,exonucleolytic catabolism of deadenylated mRNA,3
+GO:0031329,0.00498646564448033,regulation of cellular catabolic process,173
+GO:0016054,0.005140637656936174,organic acid catabolic process,108
+GO:0007167,0.005140637656936174,enzyme linked receptor protein signaling pathway,108
+GO:0046395,0.005140637656936174,carboxylic acid catabolic process,108
+GO:0048583,0.005225549834170465,regulation of response to stimulus,542
+GO:0031503,0.0061002950178771775,protein-containing complex localization,71
+GO:0048598,0.007782575352133296,embryonic morphogenesis,115
+GO:1901565,0.00785376882911595,organonitrogen compound catabolic process,559
+GO:0007507,0.00822669208805706,heart development,95
+GO:0035306,0.009368754853788862,positive regulation of dephosphorylation,4
+GO:0032501,0.009830534708080976,multicellular organismal process,809
+GO:0044092,0.009830534708080976,negative regulation of molecular function,98
+GO:0016310,0.010134645207293971,phosphorylation,1061
+GO:0000165,0.010547609669318524,MAPK cascade,121
+GO:0016579,0.010547609669318524,protein deubiquitination,121
+GO:0050896,0.011105923873605955,response to stimulus,1996
+GO:0090305,0.01155807923531503,nucleic acid phosphodiester bond hydrolysis,101
+GO:0042221,0.012306634899492295,response to chemical,352
+GO:0007389,0.014460079448621767,pattern specification process,105
+GO:0009894,0.01483154048774365,regulation of catabolic process,200
+GO:0010970,0.015585352853343388,transport along microtubule,85
+GO:0044255,0.018676762789295632,cellular lipid metabolic process,396
+GO:0009605,0.018676762789295632,response to external stimulus,133
+GO:0045893,0.018676762789295632,"positive regulation of transcription, DNA-templated",157
+GO:1903508,0.018676762789295632,positive regulation of nucleic acid-templated transcription,157
+GO:1902680,0.018676762789295632,positive regulation of RNA biosynthetic process,157
+GO:0046488,0.019333944503669806,phosphatidylinositol metabolic process,134
+GO:0070646,0.020138101686007537,protein modification by small protein removal,135
+GO:0006412,0.020138101686007537,translation,372
+GO:0009152,0.020138101686007537,purine ribonucleotide biosynthetic process,90
+GO:0009260,0.020138101686007537,ribonucleotide biosynthetic process,90
+GO:0006164,0.020138101686007537,purine nucleotide biosynthetic process,90
+GO:0046390,0.020138101686007537,ribose phosphate biosynthetic process,90
+GO:0050821,0.02050485235817961,protein stabilization,6
+GO:0030705,0.021175623406754253,cytoskeleton-dependent intracellular transport,91
+GO:0055085,0.02237053891115328,transmembrane transport,582
+GO:0007017,0.023675337076126644,microtubule-based process,295
+GO:0060271,0.024287462826696502,cilium assembly,140
+GO:0034655,0.025682032831697867,nucleobase-containing compound catabolic process,166
+GO:0099111,0.0259709193675565,microtubule-based transport,95
+GO:0043043,0.02707201578753853,peptide biosynthetic process,385
+GO:0015980,0.028383779010864647,energy derivation by oxidation of organic compounds,144
+GO:0006928,0.030624955867236174,movement of cell or subcellular component,305
+GO:0072522,0.031566643812152954,purine-containing compound biosynthetic process,99
+GO:0009124,0.034411127908730264,nucleoside monophosphate biosynthetic process,21
+GO:0046700,0.034840518347110216,heterocycle catabolic process,175
+GO:0044270,0.034840518347110216,cellular nitrogen compound catabolic process,175
+GO:0010557,0.034840518347110216,positive regulation of macromolecule biosynthetic process,175
+GO:0051716,0.03568400084776698,cellular response to stimulus,1797
+GO:0051254,0.03584924190465158,positive regulation of RNA metabolic process,176
+GO:0010629,0.03673486817003329,negative regulation of gene expression,203
+GO:0045935,0.03819918783085834,positive regulation of nucleobase-containing compound metabolic process,178
+GO:0031328,0.03941274070185834,positive regulation of cellular biosynthetic process,179
+GO:0120031,0.04334830705898027,plasma membrane bounded cell projection assembly,156
+GO:0030031,0.04334830705898027,cell projection assembly,156
+GO:0019941,0.04418406424072971,modification-dependent protein catabolic process,321
+GO:0006518,0.0483201600166911,peptide metabolic process,413
+GO:0043632,0.048360028170453345,modification-dependent macromolecule catabolic process,325
+GO:0034381,0.04867366495728343,plasma lipoprotein particle clearance,1
+GO:0034383,0.04867366495728343,low-density lipoprotein particle clearance,1
+GO:0009134,0.04867366495728343,nucleoside diphosphate catabolic process,1
+GO:0097006,0.04867366495728343,regulation of plasma lipoprotein particle levels,1
+GO:0032799,0.04867366495728343,low-density lipoprotein receptor particle metabolic process,1
+GO:2000644,0.04867366495728343,regulation of receptor catabolic process,1
+GO:0032801,0.04867366495728343,receptor catabolic process,1
+GO:0032802,0.04867366495728343,low-density lipoprotein particle receptor catabolic process,1
+GO:0032803,0.04867366495728343,regulation of low-density lipoprotein particle receptor catabolic process,1
+GO:0031648,0.04867366495728343,protein destabilization,1
+GO:0010984,0.04867366495728343,regulation of lipoprotein particle clearance,1
+GO:0010985,0.04867366495728343,negative regulation of lipoprotein particle clearance,1
+GO:0010988,0.04867366495728343,regulation of low-density lipoprotein particle clearance,1
+GO:0010989,0.04867366495728343,negative regulation of low-density lipoprotein particle clearance,1
+GO:0006281,0.04872164960919264,DNA repair,161
+GO:0000291,0.049656833643292805,"nuclear-transcribed mRNA catabolic process, exonucleolytic",10
+GO:0009892,0.04988209549666868,negative regulation of metabolic process,478

@@ -1,0 +1,740 @@
+---
+title: "Processing_data"
+author: "Agneesh Barua"
+date: "3/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=F}
+library(tidyverse)
+library(janitor)
+library(data.table)
+```
+
+# Set path variables
+```{r}
+Ortholog_path = file.path("../data/orthologs/Orthologues_Stichodactyla_haddoni_longest_pep")
+#Kallisto_path = file.path("./Transcriptomes/Expression_data") #not included because data files too large
+```
+
+# Get orthologs
+From the species overlap output file in OrthoFinder calculate the species that has the highest overlap. And the arrange the species in descending order. That will the order by which to left_join. Use the species with the highest overlap to join by. In our case it was S.haddoni. Check Total_overlap_between_all_species.csv file. 
+```{r get orthlog list, message=FALSE}
+
+orthdata<-read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Stichidactyla_gigantea_longest_pep.tsv"))
+
+orthdata %>% left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Heteractic_macgnifica_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Heteractis_crispa_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Stichodactyla_mertensi_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Heteractis_aurelias_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>%
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Entacmea_quadricolor_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>%
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+   left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Heterodactyla_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Macrodactyla_doreensis_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Oulactis_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Actinia_tenebrosa_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Galaxea_fascicularis_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Anthopleura_dowii_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Nematostella_vectensis_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Nemopilema_nomurai_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>%
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Hydra_vulgaris_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% 
+  dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Sanderia_malayensis_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Cyanea_capillata_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Chironex_fleckeri_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>% 
+  left_join(read_delim(file.path(Ortholog_path,"Stichodactyla_haddoni_longest_pep__v__Chrysaora_fuscescens_longest_pep.tsv")) %>% filter(Stichodactyla_haddoni_longest_pep %in% orthdata$Stichodactyla_haddoni_longest_pep) %>% dplyr::select(-c("Orthogroup")),by = "Stichodactyla_haddoni_longest_pep") %>%  drop_na() -> all_anemone_orth_list
+
+all_anemone_orth_list %>% write_csv("../data/orthologs/all_anemone_orth_list.csv")
+```
+
+```{r}
+all_anemone_orth_list<-read_csv("../data/orthologs/all_anemone_orth_list.csv")
+```
+
+
+# Loading expression data from Kallisto
+We use a new normalization called tpm10k implemented in Munro et al 2022. 
+Use standard output file from Kallisto. For count data select the 'counts' column from Kallisto output
+
+## Actinia_tenebrosa
+```{r,message=F,eval=F}
+Acte_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677488/abundance.tsv")) %>% mutate(tissue = "Acte_mesentries1") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677518/abundance.tsv")) %>% mutate(tissue = "Acte_mesentries2") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677492/abundance.tsv")) %>% mutate(tissue = "Acte_mesentries3") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677515/abundance.tsv")) %>% mutate(tissue = "Acte_acrorhagi1") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677512/abundance.tsv")) %>% mutate(tissue = "Acte_acrorhagi2") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677507/abundance.tsv")) %>% mutate(tissue = "Acte_acrorhagi3") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677522/abundance.tsv")) %>% mutate(tissue = "Acte_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4), 
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677502/abundance.tsv")) %>% mutate(tissue = "Acte_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Actinia_tenebrosa/results/SRR4677495/abundance.tsv")) %>% mutate(tissue = "Acte_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4)) %>% dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Actinia_tenebrosa_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Actinia_tenebrosa_longest_pep) %>% mutate(Actinia_tenebrosa_longest_pep = strsplit(as.character(Actinia_tenebrosa_longest_pep), ",")) %>%  
+  unnest(Actinia_tenebrosa_longest_pep) %>% as_tibble())
+#get the paralogs and remove space
+t<-t %>% mutate(target_id =  str_remove(t$Actinia_tenebrosa_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in the tentacle
+d<-left_join(t,Acte_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Acte_tentacles2)
+
+#NAs to 0
+Acte_tpm_exp[is.na(Acte_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Acte_tpm_exp<- Acte_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Actinia_tenebrosa_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Acte_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1))
+```
+
+## Anthopleura_dowii
+```{r,message=F,eval=F}
+Ando_tpm_exp<-read_tsv(file.path(Kallisto_path,"Anthopleura_dowi/results/SRR3932753/abundance.tsv")) %>% mutate(tissue = "Ando_tentacles") %>% mutate(tpm10k = tpm*n()/10e4) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Anthopleura_dowii_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Anthopleura_dowii_longest_pep) %>% mutate(Anthopleura_dowii_longest_pep = strsplit(as.character(Anthopleura_dowii_longest_pep), ",")) %>%   
+  unnest(Anthopleura_dowii_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Anthopleura_dowii_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Ando_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Ando_tentacles)
+
+#NAs to 0
+Ando_tpm_exp[is.na(Ando_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Ando_tpm_exp<- Ando_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Anthopleura_dowii_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+```
+
+## Chironex_fleckeri
+```{r,message=F,eval=F}
+Chfle_tpm_exp<-read_tsv(file.path(Kallisto_path,"Chironex_fleckeri/results/SRR1819888/abundance.tsv")) %>% mutate(tissue = "Chfle_tentacles") %>% mutate(tpm10k = tpm*n()/10e4) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Chironex_fleckeri_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Chironex_fleckeri_longest_pep) %>% mutate(Chironex_fleckeri_longest_pep = strsplit(as.character(Chironex_fleckeri_longest_pep), ",")) %>%   
+  unnest(Chironex_fleckeri_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Chironex_fleckeri_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Chfle_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Chfle_tentacles)
+
+#NAs to 0
+Chfle_tpm_exp[is.na(Chfle_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Chfle_tpm_exp<- Chfle_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Chironex_fleckeri_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+#filter only orthologs
+Chfle_tpm_exp<-Chfle_tpm_exp %>% filter(target_id %in% str_remove(all_anemone_orth_list$Chironex_fleckeri_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+```
+
+## Chrysaora_fuscescens
+```{r,message=F,eval=F}
+Chfus_tpm_exp<-read_tsv(file.path(Kallisto_path,"Chrysaora_fuscescens/results/SRR3180892/abundance.tsv")) %>% mutate(tissue = "Chfus_tentacles") %>% mutate(tpm10k = tpm*n()/10e4) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Chrysaora_fuscescens_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Chrysaora_fuscescens_longest_pep) %>% mutate(Chrysaora_fuscescens_longest_pep = strsplit(as.character(Chrysaora_fuscescens_longest_pep), ",")) %>%   
+  unnest(Chrysaora_fuscescens_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Chrysaora_fuscescens_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Chfus_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Chfus_tentacles)
+
+#NAs to 0
+Chfus_tpm_exp[is.na(Chfus_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Chfus_tpm_exp<- Chfus_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Chrysaora_fuscescens_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+```
+
+## Cyanea_capillata 
+```{r,message=F,eval=F}
+Cyca_tpm_exp<-read_tsv(file.path(Kallisto_path,"Cyanea_capillata/results/SRR1930118/abundance.tsv")) %>% mutate(tissue = "Cyca_tentacles") %>% mutate(tpm10k = tpm*n()/10e4) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Cyanea_capillata_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Cyanea_capillata_longest_pep) %>% mutate(Cyanea_capillata_longest_pep = strsplit(as.character(Cyanea_capillata_longest_pep), ",")) %>%   
+  unnest(Cyanea_capillata_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Cyanea_capillata_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Cyca_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Cyca_tentacles)
+
+#NAs to 0
+Cyca_tpm_exp[is.na(Cyca_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Cyca_tpm_exp<- Cyca_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Cyanea_capillata_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+```
+
+## Galaxea_fuscicularis
+```{r,message=F,eval=F}
+Gafu_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053374/abundance.tsv")) %>% mutate(tissue = "Gafu_tentacle_sw1") %>% mutate(tpm10k = tpm*n()/10e4), read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053375/abundance.tsv")) %>% mutate(tissue = "Gafu_tentacle_sw2") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053376/abundance.tsv")) %>% mutate(tissue = "Gafu_tentacle_sw3") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053377/abundance.tsv")) %>% mutate(tissue = "Gafu_tentacle_c1") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053378/abundance.tsv")) %>% mutate(tissue = "Gafu_tentacle_c2") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053379/abundance.tsv")) %>% mutate(tissue = "Gafu_tentacle_c3") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053381/abundance.tsv")) %>% mutate(tissue = "Gafu_body1") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053383/abundance.tsv")) %>% mutate(tissue = "Gafu_body2") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Galaxea_fascicularis/results/SRR12053384/abundance.tsv")) %>% mutate(tissue = "Gafu_body3") %>% mutate(tpm10k = tpm*n()/10e4)) %>% dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Galaxea_fascicularis_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Galaxea_fascicularis_longest_pep) %>% mutate(Galaxea_fascicularis_longest_pep = strsplit(as.character(Galaxea_fascicularis_longest_pep), ",")) %>%   
+  unnest(Galaxea_fascicularis_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Galaxea_fascicularis_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Gafu_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Gafu_tentacle_c3)
+
+#NAs to 0
+Gafu_tpm_exp[is.na(Gafu_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Gafu_tpm_exp<- Gafu_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Galaxea_fascicularis_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Gafu_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1))
+
+```
+
+## Hydra_vulgaris
+```{r,message=F,eval=F}
+Hyva_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Hydra_vulgaris/results/SRR8644113/abundance.tsv")) %>% mutate(tissue = "Hyva_tentacle_1") %>% mutate(tpm10k = tpm*n()/10e4),read_tsv(file.path(Kallisto_path,"Hydra_vulgaris/results/SRR8644112/abundance.tsv")) %>% mutate(tissue = "Hyva_tentacle_2") %>% mutate(tpm10k = tpm*n()/10e4), read_tsv(file.path(Kallisto_path,"Hydra_vulgaris/results/SRR8089748/abundance.tsv")) %>% mutate(tissue = "Hyva_tentacle_3") %>% mutate(tpm10k = tpm*n()/10e4), read_tsv(file.path(Kallisto_path,"Hydra_vulgaris/results/SRR8644105/abundance.tsv")) %>% mutate(tissue = "Hyva_body1") %>% mutate(tpm10k = tpm*n()/10e4), read_tsv(file.path(Kallisto_path,"Hydra_vulgaris/results/SRR8644104/abundance.tsv")) %>% mutate(tissue = "Hyva_body2") %>% mutate(tpm10k = tpm*n()/10e4), read_tsv(file.path(Kallisto_path,"Hydra_vulgaris/results/SRR8089746/abundance.tsv")) %>% mutate(tissue = "Hyva_body3") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+    
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Hydra_vulgaris_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Hydra_vulgaris_longest_pep) %>% mutate(Hydra_vulgaris_longest_pep = strsplit(as.character(Hydra_vulgaris_longest_pep), ",")) %>%   
+  unnest(Hydra_vulgaris_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Hydra_vulgaris_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Hyva_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Hyva_tentacle_3)
+
+Hyva_tpm_exp[is.na(Hyva_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Hyva_tpm_exp<- Hyva_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Hydra_vulgaris_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Hyva_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1))
+```
+
+## Macrodactyla_doreensis
+```{r,message=F,eval=F}
+Mado_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Macrodactyla_doreensis/results/SRR14115222/abundance.tsv")) %>% mutate(tissue = "Mado_tentacle_o1") %>% mutate(tpm10k = tpm*n()/10e4),
+                    read_tsv(file.path(Kallisto_path,"Macrodactyla_doreensis/results/SRR14115223/abundance.tsv")) %>% mutate(tissue = "Mado_tentacle_o2") %>% mutate(tpm10k = tpm*n()/10e4),
+                    read_tsv(file.path(Kallisto_path,"Macrodactyla_doreensis/results/SRR14115224/abundance.tsv")) %>% mutate(tissue = "Mado_tentacle_i1") %>% mutate(tpm10k = tpm*n()/10e4),
+                    read_tsv(file.path(Kallisto_path,"Macrodactyla_doreensis/results/SRR14115225/abundance.tsv")) %>% mutate(tissue = "Mado_tentacle_i2") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+    
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Macrodactyla_doreensis_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Macrodactyla_doreensis_longest_pep) %>% mutate(Macrodactyla_doreensis_longest_pep = strsplit(as.character(Macrodactyla_doreensis_longest_pep), ",")) %>%   
+  unnest(Macrodactyla_doreensis_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Macrodactyla_doreensis_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Mado_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Mado_tentacle_i2)
+
+Mado_tpm_exp[is.na(Mado_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Mado_tpm_exp<- Mado_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Macrodactyla_doreensis_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Mado_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t #our sample is very different, removed it
+GGally::ggpairs(log10(t+1))
+```
+
+## Nemopilema_nomurai
+```{r,message=F,eval=F}
+Neno_tpm_exp<-read_tsv(file.path(Kallisto_path,"Nemopilema_nomurai/results/SRR6298212/abundance.tsv")) %>% mutate(tissue = "Neno_tentacles") %>% mutate(tpm10k = tpm*n()/10e4) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Nemopilema_nomurai_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Nemopilema_nomurai_longest_pep) %>% mutate(Nemopilema_nomurai_longest_pep = strsplit(as.character(Nemopilema_nomurai_longest_pep), ",")) %>%   
+  unnest(Nemopilema_nomurai_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Nemopilema_nomurai_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Neno_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Neno_tentacles)
+
+Neno_tpm_exp[is.na(Neno_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Neno_tpm_exp<- Neno_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Nemopilema_nomurai_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+```
+
+## Oulactis
+```{r,message=FALSE,eval=F}
+Oula_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Oulactis/results/ERR2710216/abundance.tsv")) %>% mutate(tissue = "Oula_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4), read_tsv(file.path(Kallisto_path,"Oulactis/results/ERR2710215/abundance.tsv")) %>% mutate(tissue = "Oula_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4), read_tsv(file.path(Kallisto_path,"Oulactis/results/ERR2710214/abundance.tsv")) %>% mutate(tissue = "Oula_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+  t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Oulactis_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Oulactis_longest_pep) %>% mutate(Oulactis_longest_pep = strsplit(as.character(Oulactis_longest_pep), ",")) %>%   
+  unnest(Oulactis_longest_pep) %>% as_tibble())
+  
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Oulactis_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in tentacles
+d<-left_join(t,Oula_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Oula_tentacles2)
+
+Oula_tpm_exp[is.na(Oula_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Oula_tpm_exp<- Oula_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Oulactis_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Oula_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t 
+GGally::ggpairs(log10(t+1))
+```
+
+## Sanderia_malayensis
+```{r, message=F,eval=F}
+Sama_tpm_exp<-read_tsv(file.path(Kallisto_path,"Sanderia_malayensis/results/SRR6298216/abundance.tsv")) %>% mutate(tissue = "Sama_tentacles") %>% mutate(tpm10k = tpm*n()/10e4) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Sanderia_malayensis_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Sanderia_malayensis_longest_pep) %>% mutate(Sanderia_malayensis_longest_pep = strsplit(as.character(Sanderia_malayensis_longest_pep), ",")) %>%  
+  unnest(Sanderia_malayensis_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Sanderia_malayensis_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Sama_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Sama_tentacles)
+
+Sama_tpm_exp[is.na(Sama_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Sama_tpm_exp<- Sama_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Sanderia_malayensis_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+```
+
+## Nematostella_vectensis
+```{r,message=F,eval=F}
+Neva_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368847/abundance.tsv")) %>% mutate(tissue = "Neva_mesentries1") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368846/abundance.tsv")) %>% mutate(tissue = "Neva_mesentries2") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368852/abundance.tsv")) %>% mutate(tissue = "Neva_mesentries3") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368849/abundance.tsv")) %>% mutate(tissue = "Neva_nematosomes1") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368848/abundance.tsv")) %>% mutate(tissue = "Neva_nematosomes2") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368845/abundance.tsv")) %>% mutate(tissue = "Neva_nematosomes3") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368838/abundance.tsv")) %>% mutate(tissue = "Neva_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4), 
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368850/abundance.tsv")) %>% mutate(tissue = "Neva_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Nematostella_vectensis/results/ERR1368851/abundance.tsv")) %>% mutate(tissue = "Neva_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4)) %>% dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Nematostella_vectensis_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Nematostella_vectensis_longest_pep) %>% mutate(Nematostella_vectensis_longest_pep = strsplit(as.character(Nematostella_vectensis_longest_pep), ",")) %>%  
+  unnest(Nematostella_vectensis_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Nematostella_vectensis_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in the tentacle
+d<-left_join(t,Neva_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Neva_tentacles2)
+
+Neva_tpm_exp[is.na(Neva_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Neva_tpm_exp<- Neva_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Nematostella_vectensis_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Neva_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t 
+GGally::ggpairs(log10(t+1))
+```
+
+## Heterodactyla_hemprichii
+```{r,message=F,eval=F}
+Hehe_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Heterodactyla/results/SRR14115227/abundance.tsv")) %>% mutate(tissue = "Hehe_tentalce_exo1") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Heterodactyla/results/SRR14115228/abundance.tsv")) %>% mutate(tissue = "Hehe_tentalce_exo2") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Heterodactyla/results/SRR14115229/abundance.tsv")) %>% mutate(tissue = "Hehe_body") %>% mutate(tpm10k = tpm*n()/10e4),
+read_tsv(file.path(Kallisto_path,"Heterodactyla/results/SRR14115226/abundance.tsv")) %>% mutate(tissue = "Hehe_nematosomes") %>% mutate(tpm10k = tpm*n()/10e4)) %>% dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Heterodactyla_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Heterodactyla_longest_pep) %>% mutate(Heterodactyla_longest_pep = strsplit(as.character(Heterodactyla_longest_pep), ",")) %>%  
+  unnest(Heterodactyla_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Heterodactyla_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs in the tentacle
+d<-left_join(t,Hehe_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Hehe_tentalce_exo2)
+
+Hehe_tpm_exp[is.na(Hehe_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Hehe_tpm_exp<- Hehe_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Heterodactyla_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Hehe_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t 
+GGally::ggpairs(log10(t+1))
+```
+
+## Entacmea_quadricolor
+```{r, message=F,eval=F}
+Enqua_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results/Equa_3_S3_L002/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+        read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_18_S2/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+        read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_8_S10_L001/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4),
+        read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_10_S13_L001/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles4") %>% mutate(tpm10k = tpm*n()/10e4),
+        read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_11_S14_L001/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles5") %>% mutate(tpm10k = tpm*n()/10e4),
+        read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_19_S3/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles6") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Entacmea_quadricolor_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Entacmea_quadricolor_longest_pep) %>% mutate(Entacmea_quadricolor_longest_pep = strsplit(as.character(Entacmea_quadricolor_longest_pep), ",")) %>%  
+  unnest(Entacmea_quadricolor_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Entacmea_quadricolor_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Enqua_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Enqua_tentacles4)
+
+Enqua_tpm_exp[is.na(Enqua_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Enqua_tpm_exp<- Enqua_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Entacmea_quadricolor_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Enqua_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t #made dplyr::selection to include good cor libraries
+GGally::ggpairs(log10(t+1))
+```
+
+
+## Heteractis_aurelias
+```{r, message=F,eval=F}
+Heau_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Heteractis_aurelias/results/Haur_5_S5_L002/abundance.tsv")) %>% mutate(tissue = "Heau_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+                    read_tsv(file.path(Kallisto_path,"Heteractis_aurelias/results2/Haur_3_S20_L001/abundance.tsv")) %>% mutate(tissue = "Heau_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+                    read_tsv(file.path(Kallisto_path,"Heteractis_aurelias/results2/Haur_4_S1_L001/abundance.tsv")) %>% mutate(tissue = "Heau_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4),
+                    read_tsv(file.path(Kallisto_path,"Heteractis_aurelias/results2/Haur_5_S3_L001/abundance.tsv")) %>% mutate(tissue = "Heau_tentacles4") %>% mutate(tpm10k = tpm*n()/10e4),
+                    read_tsv(file.path(Kallisto_path,"Heteractis_aurelias/results2/Haur_12_S29/abundance.tsv")) %>% mutate(tissue = "Heau_tentacles5") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Heteractis_aurelias_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Heteractis_aurelias_longest_pep) %>% mutate(Heteractis_aurelias_longest_pep = strsplit(as.character(Heteractis_aurelias_longest_pep), ",")) %>%  
+  unnest(Heteractis_aurelias_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Heteractis_aurelias_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Heau_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Heau_tentacles1)
+
+Heau_tpm_exp[is.na(Heau_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Heau_tpm_exp<- Heau_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Heteractis_aurelias_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Heau_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1))
+
+```
+
+## Heteractis_crispa
+```{r, message=F,eval=F}
+Hecri_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Heteractis_crispa/results/Hcri_7_S7_L002/abundance.tsv")) %>% mutate(tissue = "Hecri_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Heteractis_crispa/results2/Hcri_3_S2_L001/abundance.tsv")) %>% mutate(tissue = "Hecri_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Heteractis_crispa/results2/Hcri_4_S4_L001/abundance.tsv")) %>% mutate(tissue = "Hecri_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Heteractis_crispa/results2/Hcri_13_S30/abundance.tsv")) %>% mutate(tissue = "Hecri_tentacles4") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Heteractis_crispa_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Heteractis_crispa_longest_pep) %>% mutate(Heteractis_crispa_longest_pep = strsplit(as.character(Heteractis_crispa_longest_pep), ",")) %>%  
+  unnest(Heteractis_crispa_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Heteractis_crispa_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Hecri_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Hecri_tentacles1)
+
+Hecri_tpm_exp[is.na(Hecri_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Hecri_tpm_exp<- Hecri_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Heteractis_crispa_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Hecri_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1))
+```
+
+## Heteractis_magnifica
+```{r, message=F,eval=F}
+Hemag_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Heteractis_macgnifica/results/Hmag_4_S4_L002/abundance.tsv")) %>% mutate(tissue = "Hemag_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Heteractis_macgnifica/results2/Hmag_3_2_S20_L001/abundance.tsv")) %>% mutate(tissue = "Hemag_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Heteractis_macgnifica/results2/Hmag_4_S14_L001/abundance.tsv")) %>% mutate(tissue = "Hemag_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Heteractis_macgnifica/results2/Hmag_5_S15_L001/abundance.tsv")) %>% mutate(tissue = "Hemag_tentacles4") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Heteractis_macgnifica/results2/Hmag_11_S28/abundance.tsv")) %>% mutate(tissue = "Hemag_tentacles5") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Heteractic_macgnifica_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Heteractic_macgnifica_longest_pep) %>% mutate(Heteractic_macgnifica_longest_pep = strsplit(as.character(Heteractic_macgnifica_longest_pep), ",")) %>%  
+  unnest(Heteractic_macgnifica_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Heteractic_macgnifica_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Hemag_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Hemag_tentacles1)
+
+Hemag_tpm_exp[is.na(Hemag_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Hemag_tpm_exp<- Hemag_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Heteractic_macgnifica_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Hemag_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1)) #Hmag_3_S7_L001 is a bad sample. Low corr. Removed it
+```
+
+## Stichodactyla_gigantea
+```{r, message=F,eval=F}
+Stgag_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Stichidactyla_gigantea/results/Sgig_1_S1_L002/abundance.tsv")) %>% mutate(tissue = "Stgag_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichidactyla_gigantea/results2/Sgig_3_S11_L001/abundance.tsv")) %>% mutate(tissue = "Stgag_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichidactyla_gigantea/results2/Sgig_4_S12_L001/abundance.tsv")) %>% mutate(tissue = "Stgag_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichidactyla_gigantea/results2/Sgig_8_S25/abundance.tsv")) %>% mutate(tissue = "Stgag_tentacles4") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Stichidactyla_gigantea_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Stichidactyla_gigantea_longest_pep) %>% mutate(Stichidactyla_gigantea_longest_pep = strsplit(as.character(Stichidactyla_gigantea_longest_pep), ",")) %>%  
+  unnest(Stichidactyla_gigantea_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Stichidactyla_gigantea_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Stgag_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Stgag_tentacles1)
+
+Stgag_tpm_exp[is.na(Stgag_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Stgag_tpm_exp<- Stgag_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Stichidactyla_gigantea_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Stgag_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1))
+```
+
+## Stichodactyla_haddoni
+```{r, message=F,eval=F}
+Sthad_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Stichodactyla_haddoni/results/Shad_2_S2_L002/abundance.tsv")) %>% mutate(tissue = "Sthad_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichodactyla_haddoni/results2/Shad_2_S18_L001/abundance.tsv")) %>% mutate(tissue = "Sthad_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichodactyla_haddoni/results2/Shad_3_S19_L001/abundance.tsv")) %>% mutate(tissue = "Sthad_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Stichodactyla_haddoni_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Stichodactyla_haddoni_longest_pep) %>% mutate(Stichodactyla_haddoni_longest_pep = strsplit(as.character(Stichodactyla_haddoni_longest_pep), ",")) %>%  
+  unnest(Stichodactyla_haddoni_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Stichodactyla_haddoni_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Sthad_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Sthad_tentacles1)
+
+Sthad_tpm_exp[is.na(Sthad_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Sthad_tpm_exp<- Sthad_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Stichodactyla_haddoni_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Sthad_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1))
+```
+
+## Stichodactyla_mertensi
+```{r, message=F,eval=F}
+Stmer_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Stichodactyla_mertensi/results2/Smer_2_S8_L001/abundance.tsv")) %>% mutate(tissue = "Stmer_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichodactyla_mertensi/results2/Smer_3_S9_L001/abundance.tsv")) %>% mutate(tissue = "Stmer_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichodactyla_mertensi/results2/Smer_4_S16_L001/abundance.tsv")) %>% mutate(tissue = "Stmer_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4),
+                     read_tsv(file.path(Kallisto_path,"Stichodactyla_mertensi/results2/Smer_6_S12_L001/abundance.tsv")) %>% mutate(tissue = "Stmer_tentacles4") %>% mutate(tpm10k = tpm*n()/10e4)) %>% 
+  dplyr::select(target_id,tpm10k,tissue) %>% spread(tissue,tpm10k)
+
+#parse the data 
+t<-as_tibble(all_anemone_orth_list[all_anemone_orth_list$Stichodactyla_mertensi_longest_pep %like% ",", ] %>% dplyr::select(Orthogroup,Stichodactyla_mertensi_longest_pep) %>% mutate(Stichodactyla_mertensi_longest_pep = strsplit(as.character(Stichodactyla_mertensi_longest_pep), ",")) %>%  
+  unnest(Stichodactyla_mertensi_longest_pep) %>% as_tibble())
+#get the paralogs
+t<-t %>% mutate(target_id =  str_remove(t$Stichodactyla_mertensi_longest_pep,".p[0-9]")) %>% dplyr::select(Orthogroup,target_id)
+t$target_id<-gsub(" ","",t$target_id)
+
+#Get only highest expressed orthologs
+d<-left_join(t,Stmer_tpm_exp, by= "target_id") %>% 
+  group_by(Orthogroup) %>% 
+  slice_max(order_by = Stmer_tentacles4)
+
+Stmer_tpm_exp[is.na(Stmer_tpm_exp)]<-0
+#remove all paralogs, filter all orthologs in and add only the ones with highest expression
+Stmer_tpm_exp<- Stmer_tpm_exp %>% filter(!target_id %in% t$target_id) %>% 
+  filter(target_id %in% str_remove(all_anemone_orth_list$Stichodactyla_mertensi_longest_pep,".p[0-9]")) %>% full_join(d) %>% dplyr::select(!Orthogroup)
+
+Stmer_tpm_exp %>% dplyr::select(!target_id)%>% round(2)->t
+GGally::ggpairs(log10(t+1)) #Removed Smer_6_S6_L002
+
+```
+
+# Making Ortholog list
+```{r,message=F,eval=F}
+
+all_anemone_orth_list<-read_csv("../data/orthologs/all_anemone_orth_list.csv")
+
+d<-rbind(all_anemone_orth_list %>% dplyr::select(Orthogroup,Chrysaora_fuscescens_longest_pep) %>% separate(Chrysaora_fuscescens_longest_pep, into = c("chfu1","chfu2","chfu3"),sep = ",") %>% pivot_longer(cols = c(chfu1,chfu2,chfu3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Cyanea_capillata_longest_pep) %>% separate(Cyanea_capillata_longest_pep, into = c("cyca1","cyca2","cyca3"),sep = ",") %>% pivot_longer(cols = c(cyca1,cyca2,cyca3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Actinia_tenebrosa_longest_pep) %>% separate(Actinia_tenebrosa_longest_pep, into = c("acte1","acte2","acte3"),sep = ",") %>% pivot_longer(cols = c(acte1,acte2,acte3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Stichodactyla_haddoni_longest_pep) %>% separate(Stichodactyla_haddoni_longest_pep, into = c("stha1","stha2","stha3"),sep = ",") %>% pivot_longer(cols = c(stha1,stha2,stha3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Stichidactyla_gigantea_longest_pep) %>% separate(Stichidactyla_gigantea_longest_pep, into = c("stga1","stga2","stga3"),sep = ",") %>% pivot_longer(cols = c(stga1,stga2,stga3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Heteractic_macgnifica_longest_pep) %>% separate(Heteractic_macgnifica_longest_pep, into = c("hema1","hema2","hema3"),sep = ",") %>% pivot_longer(cols = c(hema1,hema2,hema3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Heteractis_crispa_longest_pep) %>% separate(Heteractis_crispa_longest_pep, into = c("hecri1","hecri2","hecri3"),sep = ",") %>% pivot_longer(cols = c(hecri1,hecri2,hecri3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Stichodactyla_mertensi_longest_pep) %>% separate(Stichodactyla_mertensi_longest_pep, into = c("stmer1","stmer2","stmer3"),sep = ",") %>% pivot_longer(cols = c(stmer1,stmer2,stmer3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Heteractis_aurelias_longest_pep) %>% separate(Heteractis_aurelias_longest_pep, into = c("heaur1","heaur2","heaur3"),sep = ",") %>% pivot_longer(cols = c(heaur1,heaur2,heaur3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Entacmea_quadricolor_longest_pep) %>% separate(Entacmea_quadricolor_longest_pep, into = c("enqua1","enqua2","enqua3"),sep = ",") %>% pivot_longer(cols = c(enqua1,enqua2,enqua3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Heterodactyla_longest_pep) %>% separate(Heterodactyla_longest_pep, into = c("hetdac1","hetdac2","hetdac3"),sep = ",") %>% pivot_longer(cols = c(hetdac1,hetdac2,hetdac3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Macrodactyla_doreensis_longest_pep) %>% separate(Macrodactyla_doreensis_longest_pep, into = c("macdac1","macdac2","macdac3"),sep = ",") %>% pivot_longer(cols = c(macdac1,macdac2,macdac3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Oulactis_longest_pep) %>% separate(Oulactis_longest_pep, into = c("oula1","oula2","oula3"),sep = ",") %>% pivot_longer(cols = c(oula1,oula2,oula3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Galaxea_fascicularis_longest_pep) %>% separate(Galaxea_fascicularis_longest_pep, into = c("gafa1","gafa2","gafa3"),sep = ",") %>% pivot_longer(cols = c(gafa1,gafa2,gafa3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Anthopleura_dowii_longest_pep) %>% separate(Anthopleura_dowii_longest_pep, into = c("ando1","ando2","ando3"),sep = ",") %>% pivot_longer(cols = c(ando1,ando2,ando3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Nematostella_vectensis_longest_pep) %>% separate(Nematostella_vectensis_longest_pep, into = c("neva1","neva2","neva3"),sep = ",") %>% pivot_longer(cols = c(neva1,neva2,neva3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Nemopilema_nomurai_longest_pep) %>% separate(Nemopilema_nomurai_longest_pep, into = c("neno1","neno2","neno3"),sep = ",") %>% pivot_longer(cols = c(neno1,neno2,neno3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Hydra_vulgaris_longest_pep) %>% separate(Hydra_vulgaris_longest_pep, into = c("hyva1","hyva2","hyva3"),sep = ",") %>% pivot_longer(cols = c(hyva1,hyva2,hyva3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Sanderia_malayensis_longest_pep) %>% separate(Sanderia_malayensis_longest_pep, into = c("sama1","sama2","sama3"),sep = ",") %>% pivot_longer(cols = c(sama1,sama2,sama3)) %>% drop_na(),
+all_anemone_orth_list %>% dplyr::select(Orthogroup,Chironex_fleckeri_longest_pep) %>% separate(Chironex_fleckeri_longest_pep, into = c("chfle1","chfle2","chfle3"),sep = ",") %>% pivot_longer(cols = c(chfle1,chfle2,chfle3)) %>% drop_na())
+
+d2<- rbind(Acte_tpm_exp %>% dplyr::select(target_id),
+      Ando_tpm_exp %>% dplyr::select(target_id),
+      Chfle_tpm_exp %>% dplyr::select(target_id),
+      Chfus_tpm_exp %>% dplyr::select(target_id),
+      Cyca_tpm_exp %>% dplyr::select(target_id),
+      Enqua_tpm_exp %>% dplyr::select(target_id),
+      Gafu_tpm_exp %>% dplyr::select(target_id),
+      Heau_tpm_exp %>% dplyr::select(target_id),
+      Hecri_tpm_exp %>% dplyr::select(target_id),
+      Hehe_tpm_exp %>% dplyr::select(target_id),
+      Hemag_tpm_exp %>% dplyr::select(target_id),
+      Hyva_tpm_exp %>% dplyr::select(target_id),
+      Mado_tpm_exp %>% dplyr::select(target_id),
+      Neno_tpm_exp %>% dplyr::select(target_id),
+      Neva_tpm_exp %>% dplyr::select(target_id),
+      Oula_tpm_exp %>% dplyr::select(target_id),
+      Sama_tpm_exp %>% dplyr::select(target_id),
+      Stgag_tpm_exp %>% dplyr::select(target_id),
+      Sthad_tpm_exp %>% dplyr::select(target_id),
+      Stmer_tpm_exp %>% dplyr::select(target_id)) #Need to compute these data frame from the previous step
+
+d %>% filter(value %in% d2$target_id) %>% spread(name,value) %>% 
+  unite(acte,c(acte1,acte2)) %>% 
+  unite(ando,c(ando1,ando2,ando3)) %>% 
+  unite(chfle,c(chfle1,chfle2,chfle3)) %>% 
+  unite(chfu,c(chfu1,chfu2,chfu3)) %>% 
+  unite(cyca,c(cyca1,cyca2,cyca3)) %>% 
+  unite(enqua,c(enqua1,enqua2)) %>% 
+  unite(gafa,c(gafa1,gafa2,gafa3)) %>% 
+  unite(heaur,c(heaur1,heaur2,heaur3)) %>% 
+  unite(hecri,c(hecri1,hecri2,hecri3)) %>% 
+  unite(hema,c(hema1,hema2)) %>% 
+  unite(hetdac,c(hetdac1,hetdac2)) %>% 
+  unite(hyva,c(hyva1,hyva2,hyva3)) %>% 
+  unite(macdac,c(macdac1,macdac2,macdac3)) %>% 
+  unite(neno,c(neno1,neno2,neno3)) %>% 
+  unite(neva,c(neva1,neva2,neva3)) %>% 
+  unite(oula,c(oula1,oula2)) %>% 
+  unite(sama,c(sama1,sama2,sama3)) %>% 
+  unite(stga,c(stga1,stga2)) %>% 
+  unite(stha,c(stha1,stha2)) %>% 
+  unite(stmer,c(stmer1,stmer2,stmer3))->orth_list 
+
+orth_list %>% drop_na() -> final_orth_list
+final_orth_list %>% write_csv("../data/orthologs/final_orth_list.csv")
+
+```
+
+# Making expression matrix
+Combine the expression data and orthologs list to get a data frame of all expressed orthologs across all samples
+```{r,eval=F}
+final_orth_list<-read_csv("../data/orthologs/final_orth_list.csv")
+
+Gafu_tpm_exp %>% filter(target_id %in% final_orth_list$gafa) %>% dplyr::rename(gafa = target_id) %>% left_join(final_orth_list, by = "gafa") %>% dplyr::select(Orthogroup,grep(x = colnames(Gafu_tpm_exp),pattern = "Gafu",value = T)) %>% 
+  left_join(Acte_tpm_exp %>% filter(target_id %in% final_orth_list$acte) %>% dplyr::rename(acte = target_id) %>% left_join(final_orth_list, by = "acte") %>% dplyr::select(Orthogroup,grep(x = colnames(Acte_tpm_exp),pattern = "Acte",value = T)),by = "Orthogroup") %>% 
+  left_join(Ando_tpm_exp %>% filter(target_id %in% final_orth_list$ando) %>% dplyr::rename(ando = target_id) %>% left_join(final_orth_list, by = "ando") %>% dplyr::select(Orthogroup,grep(x = colnames(Ando_tpm_exp),pattern = "Ando",value = T)),by = "Orthogroup") %>% 
+  left_join(Chfle_tpm_exp %>% filter(target_id %in% final_orth_list$chfle) %>% dplyr::rename(chfle = target_id) %>% left_join(final_orth_list, by = "chfle") %>% dplyr::select(Orthogroup,grep(x = colnames(Chfle_tpm_exp),pattern = "Chfle",value = T)),by = "Orthogroup") %>%
+  left_join(Chfus_tpm_exp %>% filter(target_id %in% final_orth_list$chfu) %>% dplyr::rename(chfu = target_id) %>% left_join(final_orth_list, by = "chfu") %>% dplyr::select(Orthogroup,grep(x = colnames(Chfus_tpm_exp),pattern = "Chfus",value = T)),by = "Orthogroup") %>% 
+  left_join(Cyca_tpm_exp %>% filter(target_id %in% final_orth_list$cyca) %>% dplyr::rename(cyca = target_id) %>% left_join(final_orth_list, by = "cyca") %>% dplyr::select(Orthogroup,grep(x = colnames(Cyca_tpm_exp),pattern = "Cyca",value = T)),by = "Orthogroup") %>% 
+  left_join(Enqua_tpm_exp %>% filter(target_id %in% final_orth_list$enqua) %>% dplyr::rename(enqua = target_id) %>% left_join(final_orth_list, by = "enqua") %>% dplyr::select(Orthogroup,grep(x = colnames(Enqua_tpm_exp),pattern = "Enqua",value = T)),by = "Orthogroup") %>%
+  left_join(Heau_tpm_exp %>% filter(target_id %in% final_orth_list$heaur) %>% dplyr::rename(heaur = target_id) %>% left_join(final_orth_list, by = "heaur") %>% dplyr::select(Orthogroup,grep(x = colnames(Heau_tpm_exp),pattern = "Heau",value = T)),by = "Orthogroup") %>% 
+  left_join(Hecri_tpm_exp %>% filter(target_id %in% final_orth_list$hecri) %>% dplyr::rename(hecri = target_id) %>% left_join(final_orth_list, by = "hecri") %>% dplyr::select(Orthogroup,grep(x = colnames(Hecri_tpm_exp),pattern = "Hecri",value = T)),by = "Orthogroup") %>% 
+  left_join(Hehe_tpm_exp %>% filter(target_id %in% final_orth_list$hetdac) %>% dplyr::rename(hetdac = target_id) %>% left_join(final_orth_list, by = "hetdac") %>% dplyr::select(Orthogroup,grep(x = colnames(Hehe_tpm_exp),pattern = "Hehe",value = T)),by = "Orthogroup") %>% 
+  left_join(Hemag_tpm_exp %>% filter(target_id %in% final_orth_list$hema) %>% dplyr::rename(hema = target_id) %>% left_join(final_orth_list, by = "hema") %>% dplyr::select(Orthogroup,grep(x = colnames(Hemag_tpm_exp),pattern = "Hemag",value = T)),by = "Orthogroup") %>% 
+  left_join(Hyva_tpm_exp %>% filter(target_id %in% final_orth_list$hyva) %>% dplyr::rename(hyva = target_id) %>% left_join(final_orth_list, by = "hyva") %>% dplyr::select(Orthogroup,grep(x = colnames(Hyva_tpm_exp),pattern = "Hyva",value = T)),by = "Orthogroup") %>% 
+  left_join(Mado_tpm_exp %>% filter(target_id %in% final_orth_list$macdac) %>% dplyr::rename(macdac = target_id) %>% left_join(final_orth_list, by = "macdac") %>% dplyr::select(Orthogroup,grep(x = colnames(Mado_tpm_exp),pattern = "Mado",value = T)),by = "Orthogroup") %>%
+  left_join(Neno_tpm_exp %>% filter(target_id %in% final_orth_list$neno) %>% dplyr::rename(neno = target_id) %>% left_join(final_orth_list, by = "neno") %>% dplyr::select(Orthogroup,grep(x = colnames(Neno_tpm_exp),pattern = "Neno",value = T)),by = "Orthogroup") %>% 
+  left_join(Neva_tpm_exp %>% filter(target_id %in% final_orth_list$neva) %>% dplyr::rename(neva = target_id) %>% left_join(final_orth_list, by = "neva") %>% dplyr::select(Orthogroup,grep(x = colnames(Neva_tpm_exp),pattern = "Neva",value = T)),by = "Orthogroup") %>%
+  left_join(Oula_tpm_exp %>% filter(target_id %in% final_orth_list$oula) %>% dplyr::rename(oula = target_id) %>% left_join(final_orth_list, by = "oula") %>% dplyr::select(Orthogroup,grep(x = colnames(Oula_tpm_exp),pattern = "Oula",value = T)),by = "Orthogroup") %>%
+  left_join(Sama_tpm_exp %>% filter(target_id %in% final_orth_list$sama) %>% dplyr::rename(sama = target_id) %>% left_join(final_orth_list, by = "sama") %>% dplyr::select(Orthogroup,grep(x = colnames(Sama_tpm_exp),pattern = "Sama",value = T)),by = "Orthogroup") %>%
+  left_join(Stgag_tpm_exp %>% filter(target_id %in% final_orth_list$stga) %>% dplyr::rename(stga = target_id) %>% left_join(final_orth_list, by = "stga") %>% dplyr::select(Orthogroup,grep(x = colnames(Stgag_tpm_exp),pattern = "Stgag",value = T)),by = "Orthogroup") %>%
+  left_join(Sthad_tpm_exp %>% filter(target_id %in% final_orth_list$stha) %>% dplyr::rename(stha = target_id) %>% left_join(final_orth_list, by = "stha") %>% dplyr::select(Orthogroup,grep(x = colnames(Sthad_tpm_exp),pattern = "Sthad",value = T)),by = "Orthogroup") %>%
+  left_join(Stmer_tpm_exp %>% filter(target_id %in% final_orth_list$stmer) %>% dplyr::rename(stmer = target_id) %>% left_join(final_orth_list, by = "stmer") %>% dplyr::select(Orthogroup,grep(x = colnames(Stmer_tpm_exp),pattern = "Stmer",value = T)),by = "Orthogroup")-> all_sp_all_tissue_exp_matrix_tpm10k
+
+all_sp_all_tissue_exp_matrix_tpm10k %>% write_csv("../data/orthologs/all_sp_all_tissue_exp_matrix_tpm10k.csv")
+
+```

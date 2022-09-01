@@ -18,7 +18,7 @@ library(sva)
 ```
 
 ```{r,message=F}
-dat <-read_csv("../data/data_tables/all_sp_all_tissue_exp_matrix_tpm10k.csv")
+dat <-read_csv("../data/orthologs/all_sp_all_tissue_exp_matrix_tpm10k.csv")
 ```
 
 # Rank correlations between samples
@@ -257,7 +257,7 @@ plot(fit)+pvclust::pvrect(fit,alpha = 0.95)
 # PCA  
 ### All Cnidaria samples
 ```{r}
-dat <-read_csv("../data/data_tables/all_sp_all_tissue_exp_matrix_tpm10k.csv")
+dat <-read_csv("../data/orthologs/all_sp_all_tissue_exp_matrix_tpm10k.csv")
 m<-dat %>% dplyr::select(!Orthogroup) %>% round()
 m<-log10(m+1)
 m = m[!apply(m, 1, anyNA),] #removed genes without expression

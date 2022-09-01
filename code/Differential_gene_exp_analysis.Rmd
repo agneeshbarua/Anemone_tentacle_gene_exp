@@ -1,0 +1,1880 @@
+---
+title: "DGE_analysis"
+author: "Agneesh Barua"
+date: "3/29/2022"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+#DGE analysis
+## make expression mtrix
+```{r,message=FALSE}
+counts_dat<-read_csv("../data/orthologs/all_sp_all_tissue_exp_matrix_counts.csv")
+final_orth_list<-read_csv("../data/orthologs/final_orth_list.csv") %>% filter(Orthogroup %in% counts_dat$Orthogroup)
+
+counts_dat<-counts_dat %>% dplyr::select(Orthogroup,Gafu_body1,Gafu_body2,Gafu_body3,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_mesentries1,Acte_mesentries2,Acte_mesentries3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Ando_tentacles,Enqua_tentacles1,Enqua_tentacles2,Enqua_tentacles3,Enqua_tentacles4,Enqua_tentacles5,Enqua_tentacles6,Heau_tentacles1,Heau_tentacles2,Heau_tentacles3,Heau_tentacles4,Heau_tentacles5,Hecri_tentacles1,Hecri_tentacles2,Hecri_tentacles3,Hecri_tentacles4,Hehe_body,Hehe_nematosomes,Hehe_tentalce_exo1,Hehe_tentalce_exo2,Hemag_tentacles1,Hemag_tentacles2,Hemag_tentacles3,Hemag_tentacles4,Hemag_tentacles5,Mado_tentacle_i1,Mado_tentacle_i2,Mado_tentacle_o1,Mado_tentacle_o2,Neva_mesentries1,Neva_mesentries2,Neva_mesentries3,Neva_nematosomes1,Neva_nematosomes2,Neva_nematosomes3,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Stgag_tentacles1,Stgag_tentacles2,Stgag_tentacles3,Stgag_tentacles4,Sthad_tentacles1,Sthad_tentacles2,Sthad_tentacles3,Stmer_tentacles1,Stmer_tentacles2,Stmer_tentacles3,Stmer_tentacles4,Hemag_tentacles1,Hemag_tentacles2,Hemag_tentacles3,Hemag_tentacles4,Hemag_tentacles5)
+```
+
+## Comparison between Stmer and Gafu tentacles
+```{r,message=F}
+library(ellipse)
+library(edgeR)
+library(DESeq2)
+
+GafuStmer<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Stmer_tentacles1,Stmer_tentacles2,Stmer_tentacles3,Stmer_tentacles4)
+GafuStmer[is.na(GafuStmer)]<-0
+GafuStmer<-GafuStmer %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stmer),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Stmer_tent",4)))
+dge<-DGEList(GafuStmer %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stmer"), 
+             group = groups, 
+             genes = GafuStmer$stmer)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stmer_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StmerGafu_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stmer and Gafu catch tentacles
+```{r,message=F}
+library(ellipse)
+library(edgeR)
+library(DESeq2)
+
+#use only sweeper tentacle because they have less symbiodinuim (see ref)
+GafuStmer<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Stmer_tentacles1,Stmer_tentacles2,Stmer_tentacles3,Stmer_tentacles4)
+GafuStmer[is.na(GafuStmer)]<-0
+GafuStmer<-GafuStmer %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stmer),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Stmer_tent",4)))
+dge<-DGEList(GafuStmer %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stmer"), 
+             group = groups, 
+             genes = GafuStmer$stmer)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stmer_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StmerGafu_dge_ct
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stmer and Acte tentacles
+```{r,message=F}
+ActeStmer<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Stmer_tentacles1,Stmer_tentacles2,Stmer_tentacles3,Stmer_tentacles4)
+ActeStmer[is.na(ActeStmer)]<-0
+ActeStmer<-ActeStmer %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stmer),by = "Orthogroup")
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Stmer_tent",4)))
+dge<-DGEList(ActeStmer %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stmer"), 
+             group = groups, 
+             genes = ActeStmer$stmer)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stmer_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StmerActe_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stmer and Neva tentacles
+```{r,message=F}
+NevaStmer<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Stmer_tentacles1,Stmer_tentacles2,Stmer_tentacles3,Stmer_tentacles4)
+NevaStmer[is.na(NevaStmer)]<-0
+NevaStmer<-NevaStmer %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stmer),by = "Orthogroup")
+
+groups<-factor(c(rep("Neva_tent",3),
+                 rep("Stmer_tent",4)))
+dge<-DGEList(NevaStmer %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stmer"), 
+             group = groups, 
+             genes = NevaStmer$stmer)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stmer_tent-Neva_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StmerNeva_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stmer and Oula tentacles
+```{r,message=F}
+OulaStmer<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Stmer_tentacles1,Stmer_tentacles2,Stmer_tentacles3,Stmer_tentacles4)
+OulaStmer[is.na(OulaStmer)]<-0
+OulaStmer<-OulaStmer %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stmer),by = "Orthogroup")
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Stmer_tent",4)))
+dge<-DGEList(OulaStmer %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stmer"), 
+             group = groups, 
+             genes = OulaStmer$stmer)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stmer_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StmerOula_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+## Comparison between Stgag and Gafu tentacles
+```{r,message=F}
+library(ellipse)
+library(edgeR)
+library(DESeq2)
+
+GafuStmag<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Stgag_tentacles1,Stgag_tentacles2,Stgag_tentacles3,Stgag_tentacles4)
+GafuStmag[is.na(GafuStmag)]<-0
+GafuStmag<-GafuStmag %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stga),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Stgag_tent",4)))
+dge<-DGEList(GafuStmag %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stga"), 
+             group = groups, 
+             genes = GafuStmag$stga)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stgag_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StgagGafu_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stgag and Gafu catch tentacles
+```{r,message=F}
+library(ellipse)
+library(edgeR)
+library(DESeq2)
+
+GafuStmag<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Stgag_tentacles1,Stgag_tentacles2,Stgag_tentacles3,Stgag_tentacles4)
+GafuStmag[is.na(GafuStmag)]<-0
+GafuStmag<-GafuStmag %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stga),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Stgag_tent",4)))
+dge<-DGEList(GafuStmag %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stga"), 
+             group = groups, 
+             genes = GafuStmag$stga)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stgag_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StgagGafu_dge_ct
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stgag and Acte tentacles
+```{r,message=F}
+StgagActe<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Stgag_tentacles1,Stgag_tentacles2,Stgag_tentacles3,Stgag_tentacles4)
+StgagActe[is.na(StgagActe)]<-0
+StgagActe<-StgagActe %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stga),by = "Orthogroup")
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Stgag_tent",4)))
+dge<-DGEList(StgagActe %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stga"), 
+             group = groups, 
+             genes = StgagActe$stga)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stgag_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StgagActe_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stgag and Neva tentacles
+```{r,message=F}
+StgagNeva<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Stgag_tentacles1,Stgag_tentacles2,Stgag_tentacles3,Stgag_tentacles4)
+StgagNeva[is.na(StgagNeva)]<-0
+StgagNeva<-StgagNeva %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stga),by = "Orthogroup")
+
+groups<-factor(c(rep("Neva_tent",3),
+                 rep("Stgag_tent",4)))
+dge<-DGEList(StgagNeva %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stga"), 
+             group = groups, 
+             genes = StgagNeva$stga)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stgag_tent-Neva_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StgagNeva_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Stgag and Oula tentacles
+```{r,message=F}
+StgagOula<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Stgag_tentacles1,Stgag_tentacles2,Stgag_tentacles3,Stgag_tentacles4)
+StgagOula[is.na(StgagOula)]<-0
+StgagOula<-StgagOula %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stga),by = "Orthogroup")
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Stgag_tent",4)))
+dge<-DGEList(StgagOula %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stga"), 
+             group = groups, 
+             genes = StgagOula$stga)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Stgag_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->StgagOula_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Sthad and Gafu tentacles
+```{r,message=F}
+GafuSthad<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Sthad_tentacles1,Sthad_tentacles2,Sthad_tentacles3)
+GafuSthad[is.na(GafuSthad)]<-0
+GafuSthad<-GafuSthad %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stha),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Sthad_tent",3)))
+dge<-DGEList(GafuSthad %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stha"), 
+             group = groups, 
+             genes = GafuSthad$stha)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Sthad_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->SthadGafu_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Sthad and Gafu catch tentacles
+```{r,message=F}
+GafuSthad<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Sthad_tentacles1,Sthad_tentacles2,Sthad_tentacles3)
+GafuSthad[is.na(GafuSthad)]<-0
+GafuSthad<-GafuSthad %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stha),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Sthad_tent",3)))
+dge<-DGEList(GafuSthad %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stha"), 
+             group = groups, 
+             genes = GafuSthad$stha)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Sthad_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->SthadGafu_dge_ct
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Sthad and Acte tentacles
+```{r,message=F}
+SthadActe<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Sthad_tentacles1,Sthad_tentacles2,Sthad_tentacles3)
+SthadActe[is.na(SthadActe)]<-0
+SthadActe<-SthadActe %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stha),by = "Orthogroup")
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Sthad_tent",3)))
+dge<-DGEList(SthadActe %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stha"), 
+             group = groups, 
+             genes = SthadActe$stha)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Sthad_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->SthadActe_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Sthad and Neva tentacles
+```{r,message=F}
+SthadNeva<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Sthad_tentacles1,Sthad_tentacles2,Sthad_tentacles3)
+SthadNeva[is.na(SthadNeva)]<-0
+SthadNeva<-SthadNeva %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stha),by = "Orthogroup")
+
+groups<-factor(c(rep("Neva_tent",3),
+                 rep("Sthad_tent",3)))
+dge<-DGEList(SthadNeva %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stha"), 
+             group = groups, 
+             genes = SthadNeva$stha)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Sthad_tent-Neva_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->SthadNeva_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Sthad and Oula tentacles
+```{r,message=F}
+SthadOula<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Sthad_tentacles1,Sthad_tentacles2,Sthad_tentacles3)
+SthadOula[is.na(SthadOula)]<-0
+SthadOula<-SthadOula %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,stha),by = "Orthogroup")
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Sthad_tent",3)))
+dge<-DGEList(SthadOula %>% dplyr::select(!Orthogroup) %>% column_to_rownames("stha"), 
+             group = groups, 
+             genes = SthadOula$stha)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Sthad_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->SthadOula_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hcri and Gafu tentacles
+```{r,message=F}
+HecriGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Hecri_tentacles1,Hecri_tentacles2,Hecri_tentacles3)
+HecriGafu[is.na(HecriGafu)]<-0
+HecriGafu<-HecriGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hecri),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Hecri_tent",3)))
+dge<-DGEList(HecriGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hecri"), 
+             group = groups, 
+             genes = HecriGafu$hecri)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hecri_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HecriGafu_dge
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hcri and Gafu catch tentacles
+```{r,message=F}
+HecriGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Hecri_tentacles1,Hecri_tentacles2,Hecri_tentacles3)
+HecriGafu[is.na(HecriGafu)]<-0
+HecriGafu<-HecriGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hecri),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Hecri_tent",3)))
+dge<-DGEList(HecriGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hecri"), 
+             group = groups, 
+             genes = HecriGafu$hecri)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hecri_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HecriGafu_dge_ct
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+## Comparison between Hecri and Acte
+```{r,message=F}
+HecriActe<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Hecri_tentacles1,Hecri_tentacles2,Hecri_tentacles3)
+HecriActe[is.na(HecriActe)]<-0
+HecriActe<-HecriActe %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hecri),by = "Orthogroup")
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Hecri_tent",3)))
+dge<-DGEList(HecriActe %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hecri"), 
+             group = groups, 
+             genes = HecriActe$hecri)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hecri_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HecriActe_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hecri and Neva
+```{r,message=F}
+HecriNeva<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Hecri_tentacles1,Hecri_tentacles2,Hecri_tentacles3)
+HecriNeva[is.na(HecriNeva)]<-0
+HecriNeva<-HecriNeva %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hecri),by = "Orthogroup")
+
+groups<-factor(c(rep("Acte_tent",3),
+                 rep("Hecri_tent",3)))
+dge<-DGEList(HecriNeva %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hecri"), 
+             group = groups, 
+             genes = HecriActe$hecri)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hecri_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HecriNeva_dge
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hecri and Oula
+```{r,message=F}
+HecriOula<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Hecri_tentacles1,Hecri_tentacles2,Hecri_tentacles3)
+HecriOula[is.na(HecriOula)]<-0
+HecriOula<-HecriOula %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hecri),by = "Orthogroup")
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Hecri_tent",3)))
+dge<-DGEList(HecriOula %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hecri"), 
+             group = groups, 
+             genes = HecriOula$hecri)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hecri_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HecriOula_dge
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+
+## Comparison between Heaur and Gafu
+```{r,message=F}
+HeauGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Heau_tentacles1,Heau_tentacles2,Heau_tentacles3,Heau_tentacles4,Heau_tentacles5)
+HeauGafu[is.na(HeauGafu)]<-0
+HeauGafu<-HeauGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,heaur),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Heaur_tent",5)))
+dge<-DGEList(HeauGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("heaur"), 
+             group = groups, 
+             genes = HeauGafu$heaur)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Heaur_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HeaurGafu_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Heaur and catch Gafu
+```{r,message=F}
+HeauGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Heau_tentacles1,Heau_tentacles2,Heau_tentacles3,Heau_tentacles4,Heau_tentacles5)
+HeauGafu[is.na(HeauGafu)]<-0
+HeauGafu<-HeauGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,heaur),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Heaur_tent",5)))
+dge<-DGEList(HeauGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("heaur"), 
+             group = groups, 
+             genes = HeauGafu$heaur)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Heaur_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HeaurGafu_dge_ct
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+#
+# Comparison between Heaur and Acte
+```{r}
+HeauActe<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Heau_tentacles1,Heau_tentacles2,Heau_tentacles3,Heau_tentacles4,Heau_tentacles5)
+HeauActe[is.na(HeauActe)]<-0
+HeauActe<-HeauActe %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,heaur),by = "Orthogroup")
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Heaur_tent",5)))
+dge<-DGEList(HeauActe %>% dplyr::select(!Orthogroup) %>% column_to_rownames("heaur"), 
+             group = groups, 
+             genes = HeauActe$heaur)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Heaur_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HeaurActe_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Heaur and Neva
+```{r}
+HeauNeva<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Heau_tentacles1,Heau_tentacles2,Heau_tentacles3,Heau_tentacles4,Heau_tentacles5)
+HeauNeva[is.na(HeauNeva)]<-0
+HeauNeva<-HeauNeva %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,heaur),by = "Orthogroup")
+
+groups<-factor(c(rep("Neva_tent",3),
+                 rep("Heaur_tent",5)))
+dge<-DGEList(HeauNeva %>% dplyr::select(!Orthogroup) %>% column_to_rownames("heaur"), 
+             group = groups, 
+             genes = HeauNeva$heaur)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Heaur_tent-Neva_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HeaurNeva_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Heaur and Oula
+```{r}
+HeauOula<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Heau_tentacles1,Heau_tentacles2,Heau_tentacles3,Heau_tentacles4,Heau_tentacles5)
+HeauOula[is.na(HeauOula)]<-0
+HeauOula<-HeauOula %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,heaur),by = "Orthogroup")
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Heaur_tent",5)))
+dge<-DGEList(HeauOula %>% dplyr::select(!Orthogroup) %>% column_to_rownames("heaur"), 
+             group = groups, 
+             genes = HeauOula$heaur)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Heaur_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HeaurOula_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Enqua and Gafu tentacles
+```{r,message=F}
+EnquaGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Enqua_tentacles1,Enqua_tentacles2,Enqua_tentacles3,Enqua_tentacles4,Enqua_tentacles5,Enqua_tentacles6)
+EnquaGafu[is.na(EnquaGafu)]<-0
+EnquaGafu<-EnquaGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,enqua),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Enqua_tent",6)))
+dge<-DGEList(EnquaGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("enqua"), 
+             group = groups, 
+             genes = EnquaGafu$enqua)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Enqua_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->EnquaGafu_dge
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Enqua and Gafu catch tentacles
+```{r,message=F}
+EnquaGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Enqua_tentacles1,Enqua_tentacles2,Enqua_tentacles3,Enqua_tentacles4,Enqua_tentacles5,Enqua_tentacles6)
+EnquaGafu[is.na(EnquaGafu)]<-0
+EnquaGafu<-EnquaGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,enqua),by = "Orthogroup")
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Enqua_tent",6)))
+dge<-DGEList(EnquaGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("enqua"), 
+             group = groups, 
+             genes = EnquaGafu$enqua)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Enqua_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->EnquaGafu_dge_ct
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Enqua and Acte tentacles
+```{r,message=F}
+EnquaActe<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Enqua_tentacles1,Enqua_tentacles2,Enqua_tentacles3,Enqua_tentacles4,Enqua_tentacles5,Enqua_tentacles6)
+EnquaActe[is.na(EnquaActe)]<-0
+EnquaActe<-EnquaActe %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,enqua),by = "Orthogroup")
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Enqua_tent",6)))
+dge<-DGEList(EnquaActe %>% dplyr::select(!Orthogroup) %>% column_to_rownames("enqua"), 
+             group = groups, 
+             genes = EnquaActe$enqua)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Enqua_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->EnquaActe_dge
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Enqua and Neva tentacles
+```{r,message=F}
+EnquaNeva<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Enqua_tentacles1,Enqua_tentacles2,Enqua_tentacles3,Enqua_tentacles4,Enqua_tentacles5,Enqua_tentacles6)
+EnquaNeva[is.na(EnquaNeva)]<-0
+EnquaNeva<-EnquaNeva %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,enqua),by = "Orthogroup")
+
+groups<-factor(c(rep("Neva_tent",3),
+                 rep("Enqua_tent",6)))
+dge<-DGEList(EnquaNeva %>% dplyr::select(!Orthogroup) %>% column_to_rownames("enqua"), 
+             group = groups, 
+             genes = EnquaNeva$enqua)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Enqua_tent-Neva_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->EnquaNeva_dge
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Enqua and Oula tentacles
+```{r,message=F}
+EnquaOula<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Enqua_tentacles1,Enqua_tentacles2,Enqua_tentacles3,Enqua_tentacles4,Enqua_tentacles5,Enqua_tentacles6)
+EnquaOula[is.na(EnquaOula)]<-0
+EnquaOula<-EnquaOula %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,enqua),by = "Orthogroup")
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Enqua_tent",6)))
+dge<-DGEList(EnquaOula %>% dplyr::select(!Orthogroup) %>% column_to_rownames("enqua"), 
+             group = groups, 
+             genes = EnquaOula$enqua)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Enqua_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->EnquaOula_dge
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Macdac and Gafu tentacles
+```{r}
+MacdacGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Mado_tentacle_i1,Mado_tentacle_i2,Mado_tentacle_o1,Mado_tentacle_o2)
+MacdacGafu[is.na(MacdacGafu)]<-0
+MacdacGafu<-MacdacGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,macdac),by = "Orthogroup")
+MacdacGafu<-drop_na(MacdacGafu)
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Macdac_tent",4)))
+dge<-DGEList(MacdacGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("macdac"), 
+             group = groups, 
+             genes = MacdacGafu$macdac)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Macdac_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->MacdacGafu_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Macdac and Gafu catch tentacles
+```{r}
+MacdacGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Mado_tentacle_i1,Mado_tentacle_i2,Mado_tentacle_o1,Mado_tentacle_o2)
+MacdacGafu[is.na(MacdacGafu)]<-0
+MacdacGafu<-MacdacGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,macdac),by = "Orthogroup")
+MacdacGafu<-drop_na(MacdacGafu)
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Macdac_tent",4)))
+dge<-DGEList(MacdacGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("macdac"), 
+             group = groups, 
+             genes = MacdacGafu$macdac)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Macdac_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->MacdacGafu_dge_ct
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Macdac and Acte tentacles
+```{r}
+MacdacActe<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Mado_tentacle_i1,Mado_tentacle_i2,Mado_tentacle_o1,Mado_tentacle_o2)
+MacdacActe[is.na(MacdacActe)]<-0
+MacdacActe<-MacdacActe %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,macdac),by = "Orthogroup")
+MacdacActe<-drop_na(MacdacActe)
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Macdac_tent",4)))
+dge<-DGEList(MacdacActe %>% dplyr::select(!Orthogroup) %>% column_to_rownames("macdac"), 
+             group = groups, 
+             genes = MacdacGafu$macdac)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Macdac_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->MacdacActe_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Macdac and Neva tentacles
+```{r}
+MacdacNeva<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Mado_tentacle_i1,Mado_tentacle_i2,Mado_tentacle_o1,Mado_tentacle_o2)
+MacdacNeva[is.na(MacdacNeva)]<-0
+MacdacNeva<-MacdacNeva %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,macdac),by = "Orthogroup")
+MacdacNeva<-drop_na(MacdacNeva)
+
+groups<-factor(c(rep("Neva_tent",3),
+                 rep("Macdac_tent",4)))
+dge<-DGEList(MacdacNeva %>% dplyr::select(!Orthogroup) %>% column_to_rownames("macdac"), 
+             group = groups, 
+             genes = MacdacNeva$macdac)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Macdac_tent-Neva_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->MacdacNeva_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Macdac and Oula tentacles
+```{r}
+MacdacOula<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Mado_tentacle_i1,Mado_tentacle_i2,Mado_tentacle_o1,Mado_tentacle_o2)
+MacdacOula[is.na(MacdacOula)]<-0
+MacdacOula<-MacdacOula %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,macdac),by = "Orthogroup")
+MacdacOula<-drop_na(MacdacOula)
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Macdac_tent",4)))
+dge<-DGEList(MacdacOula %>% dplyr::select(!Orthogroup) %>% column_to_rownames("macdac"), 
+             group = groups, 
+             genes = MacdacOula$macdac)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Macdac_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->MacdacOula_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hemag and Gafu tentacles
+```{r}
+HemagGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_sw1,Gafu_tentacle_sw2,Gafu_tentacle_sw3,Hemag_tentacles1,Hemag_tentacles2,Hemag_tentacles3,Hemag_tentacles4,Hemag_tentacles5)
+HemagGafu[is.na(HemagGafu)]<-0
+HemagGafu<-HemagGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hema),by = "Orthogroup")
+HemagGafu<-drop_na(HemagGafu)
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Hemag_tent",5)))
+dge<-DGEList(HemagGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hema"), 
+             group = groups, 
+             genes = HemagGafu$hema)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hemag_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HemagGafu_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hemag and Gafu catch tentacles
+```{r}
+HemagGafu<-counts_dat %>% dplyr::select(Orthogroup,Gafu_tentacle_c1,Gafu_tentacle_c2,Gafu_tentacle_c3,Hemag_tentacles1,Hemag_tentacles2,Hemag_tentacles3,Hemag_tentacles4,Hemag_tentacles5)
+HemagGafu[is.na(HemagGafu)]<-0
+HemagGafu<-HemagGafu %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hema),by = "Orthogroup")
+HemagGafu<-drop_na(HemagGafu)
+
+groups<-factor(c(rep("Gafu_tent",3),
+                 rep("Hemag_tent",5)))
+dge<-DGEList(HemagGafu %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hema"), 
+             group = groups, 
+             genes = HemagGafu$hema)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hemag_tent-Gafu_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HemagGafu_dge_ct
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hemag and Acte tentacles
+```{r}
+HemagActe<-counts_dat %>% dplyr::select(Orthogroup,Acte_tentacles1,Acte_tentacles2,Acte_tentacles3,Acte_tentacles4,Acte_tentacles5,Acte_tentacles6,Hemag_tentacles1,Hemag_tentacles2,Hemag_tentacles3,Hemag_tentacles4,Hemag_tentacles5)
+HemagActe[is.na(HemagActe)]<-0
+HemagActe<-HemagActe %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hema),by = "Orthogroup")
+HemagActe<-drop_na(HemagActe)
+
+groups<-factor(c(rep("Acte_tent",6),
+                 rep("Hemag_tent",5)))
+dge<-DGEList(HemagActe %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hema"), 
+             group = groups, 
+             genes = HemagActe$hema)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hemag_tent-Acte_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HemagActe_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Hemag and Neva tentacles
+```{r}
+HemagNeva<-counts_dat %>% dplyr::select(Orthogroup,Neva_tentacles1,Neva_tentacles2,Neva_tentacles3,Hemag_tentacles1,Hemag_tentacles2,Hemag_tentacles3,Hemag_tentacles4,Hemag_tentacles5)
+HemagNeva[is.na(HemagNeva)]<-0
+HemagNeva<-HemagNeva %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hema),by = "Orthogroup")
+HemagNeva<-drop_na(HemagNeva)
+
+groups<-factor(c(rep("Neva_tent",3),
+                 rep("Hemag_tent",5)))
+dge<-DGEList(HemagNeva %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hema"), 
+             group = groups, 
+             genes = HemagNeva$hema)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hemag_tent-Neva_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HemagNeva_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Comparison between Macdac and Oula tentacles
+```{r}
+HemagOula<-counts_dat %>% dplyr::select(Orthogroup,Oula_tentacles1,Oula_tentacles2,Oula_tentacles3,Hemag_tentacles1,Hemag_tentacles2,Hemag_tentacles3,Hemag_tentacles4,Hemag_tentacles5)
+HemagOula[is.na(HemagOula)]<-0
+HemagOula<-HemagOula %>% left_join(final_orth_list %>% dplyr::select(Orthogroup,hema),by = "Orthogroup")
+HemagOula<-drop_na(HemagOula)
+
+groups<-factor(c(rep("Oula_tent",3),
+                 rep("Hemag_tent",5)))
+dge<-DGEList(HemagOula %>% dplyr::select(!Orthogroup) %>% column_to_rownames("hema"), 
+             group = groups, 
+             genes = HemagOula$hema)
+#filtering
+keep<- filterByExpr(dge, min.count = 10)                 
+summary(keep)
+dge<- dge[keep,,keep.lib.sizes = F]
+#Normalize using TMM
+dge<-calcNormFactors(dge, method = "TMM")
+#MDS
+plotMD(cpm(dge, log = T),column =4)
+plotMDS(dge)
+## Estimate dispersion {.tabset .tabset-fade}
+#to estimate dispersions with multiple factors we donstruct a design matrix. 
+#0+ means not to include an intercept
+design <- model.matrix(~0+group, dge$samples)
+colnames(design)<-levels(dge$samples$group)
+dge<-estimateDisp(dge, design, robust = T)
+dge$common.dispersion
+plotBCV(dge)
+## Determining quasi likelihood
+fit<-glmQLFit(dge, design, robust = T)
+head(fit$coefficients)
+plotQLDisp(fit)
+
+## Differential expression analysis
+con<-makeContrasts(Hemag_tent-Oula_tent, levels = design)
+qlf<- glmQLFTest(fit,contrast=con)
+ttgs<-topTags(qlf,n = 1485) 
+tibble(gene = ttgs$table$genes,logFC = ttgs$table$logFC,fdr = ttgs$table$FDR)->HemagOula_dge
+#topTags(qlf,n = 32450) %>% as.data.frame() %>%  write_csv("./0hr_48hr_anemone_contrast.csv")
+
+## QLF-test
+summary(decideTests(qlf))
+plotMD(qlf)
+```
+
+## Combine dge results
+```{r,message=F}
+
+rbind(StmerActe_dge %>% mutate(sp = "acte"),
+      SthadActe_dge %>% mutate(sp = "acte"),
+      StgagActe_dge %>% mutate(sp = "acte"),
+      EnquaActe_dge %>% mutate(sp = "acte"),
+      HecriActe_dge %>% mutate(sp = "acte"),
+      HeaurActe_dge %>% mutate(sp = "acte"),
+      HemagActe_dge %>% mutate(sp = "acte"),
+      StmerGafu_dge %>% mutate(sp = "gafu"),
+      SthadGafu_dge %>% mutate(sp = "gafu"),
+      StgagGafu_dge %>% mutate(sp = "gafu"),
+      EnquaGafu_dge %>% mutate(sp = "gafu"),
+      HecriGafu_dge %>% mutate(sp = "gafu"),
+      HeaurGafu_dge %>% mutate(sp = "gafu"),
+      HemagGafu_dge %>% mutate(sp = "gafu"),
+      StmerGafu_dge_ct %>% mutate(sp = "gafu_ct"),
+      SthadGafu_dge_ct %>% mutate(sp = "gafu_ct"),
+      StgagGafu_dge_ct %>% mutate(sp = "gafu_ct"),
+      EnquaGafu_dge_ct %>% mutate(sp = "gafu_ct"),
+      HecriGafu_dge_ct %>% mutate(sp = "gafu_ct"),
+      HeaurGafu_dge_ct %>% mutate(sp = "gafu_ct"),
+      HemagGafu_dge_ct %>% mutate(sp = "gafu_ct"),
+      StmerNeva_dge %>% mutate(sp = "neva"),
+      SthadNeva_dge %>% mutate(sp = "neva"),
+      StgagNeva_dge %>% mutate(sp = "neva"),
+      EnquaNeva_dge %>% mutate(sp = "neva"),
+      HecriNeva_dge %>% mutate(sp = "neva"),
+      HeaurNeva_dge %>% mutate(sp = "neva"),
+      HemagNeva_dge %>% mutate(sp = "neva"),
+      StmerOula_dge %>% mutate(sp = "oula"),
+      SthadOula_dge %>% mutate(sp = "oula"),
+      StgagOula_dge %>% mutate(sp = "oula"),
+      EnquaOula_dge %>% mutate(sp = "oula"),
+      HecriOula_dge %>% mutate(sp = "oula"),
+      HeaurOula_dge %>% mutate(sp = "oula"),
+      HemagActe_dge %>% mutate(sp = "oula")) %>% filter(fdr <= 0.05) -> dge_hosts_sig_dge
+
+dge_hosts_sig_dge %>% write_csv("../data/data_tables/dge_all_hosts_vs_non_hosts_sig.csv")
+
+```
