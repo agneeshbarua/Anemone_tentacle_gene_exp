@@ -1,0 +1,9 @@
+http://zoox.reefgenomics.org/download/Symbiodinium_aenigmaticum.tar.gz
+http://zoox.reefgenomics.org/download/Symbiodinium_minutum.tar.gz
+http://zoox.reefgenomics.org/download/Symbiodinium_pseudominutum.tar.gz
+http://zoox.reefgenomics.org/download/Symbiodinium_psygmophilum.tar.gz
+http://ssid.reefgenomics.org/download/Siderastrea_siderea_transcriptome.tar.gz
+http://ssid.reefgenomics.org/download/CladeC_Symbiodinium_transcriptome.tar.gz
+http://symbs.reefgenomics.org/download/SymbC1.Gene_Models.CDS.fasta.gz
+http://symbs.reefgenomics.org/download/SymbF.Gene_Models.CDS.fasta.gz
+http://smic.reefgenomics.org/download/Smic.transcriptomeRef.cov5.fa.gz

@@ -1,0 +1,279 @@
+---
+title: "Evolutionary_analysis"
+author: "Agneesh Barua"
+date: "3/29/2022"
+output: html_document
+---
+
+```{r}
+library(matrixStats)
+library(lsa)
+library(ape)
+library(tidyverse)
+library(castor)
+library(phytools)
+
+```
+
+```{r,message=F}
+dat <-read_csv("../data/orthologs/all_sp_all_tissue_exp_matrix_tpm10k.csv")
+```
+
+## read in data
+```{r}
+dat %>% dplyr::select(colnames(dat) %>% grep(pattern = "tent", value = T)) %>% round()->t
+t<-as.matrix(log10(t+1))
+```
+
+## get mean expression values for each species
+```{r}
+gafu<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gafu")))
+acte<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Acte")))
+ando<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Ando")))
+chfle<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Chfle")))
+chfus<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Chfus")))
+cyca<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Cyca")))
+enqua<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Enqua")))
+heau<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Heau")))
+hecri<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hecri")))
+hehe<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hehe")))
+hemag<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hemag")))
+hyva<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hyva")))
+mado<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Mado")))
+neno<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neno")))
+neva<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neva")))
+oula<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Oula")))
+sama<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Sama")))
+stgag<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Stgag")))
+sthad<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Sthad")))
+stmer<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Stmer")))
+
+dat_mat<-tibble(gafu,acte,ando,chfle,chfus,cyca,enqua,heau,hecri,hehe,hemag,hyva,mado,neno,neva,oula,sama,stgag,sthad,stmer)
+dat_mat[is.na(dat_mat)]<-0
+#dat_mat %>% saveRDS("../data/rds/dat_mat.RDS")
+dat_mat<-as.matrix(dat_mat)
+```
+
+# Make NJ expression tree
+```{r}
+#NJ tree
+dist<-as.dist(1-cor(dat_mat,method = "spearman"))
+njtree<-nj(dist)
+bstrees_2<-boot.phylo(phy = njtree,
+                    x = t(dat_mat),
+                    FUN = function(xx) nj(1-cor(t(xx),method="spearman")),
+                    B = 1000,
+                    trees = T)
+
+njtree<-njtree %>% reroot(node.number = 34) #reeroot nj tree same as species tree
+plot(njtree)
+nodelabels(round(bstrees_2$BP/10),frame = "none",cex = 0.8,adj = c(-0.2))
+
+```
+
+# Calculate phylogenetic distance
+```{r}
+tree<-read.nexus("../data/data_tables/rooted_cnidaria_tree")
+#correlations between phylogenetic dist and exp dist, all pairwise distances. 
+vegan::mantel(cophenetic.phylo(tree),cophenetic.phylo(njtree)) #high cor
+
+#plot phylo dist and exp dist and identify slope
+phylodist.species<-cophenetic.phylo(tree) %>% reshape2::melt() %>% filter(value != 0) #removes self corr (1)
+phylodist.exp<-cophenetic.phylo(njtree) %>% reshape2::melt() %>% filter(value != 0)
+distances<-left_join(phylodist.species,phylodist.exp,by=c("Var1","Var2")) %>% dplyr::rename(phy_dist = value.x,exp_dist = value.y) %>% distinct(phy_dist,.keep_all=T) #distinct removes two way cor (eg gafu ~ neva, neva ~ gafu, they are the same)
+
+fit<-summary(lm(phy_dist ~ exp_dist,data = distances))
+fit
+
+lm_plot<-ggplot(distances,aes(phy_dist,exp_dist))+
+  geom_point(color = "darkgreen")+
+  geom_smooth(method = "lm",se = T, color = "darkgreen")+
+  theme_light()+
+  labs(title = "Relationship between phylogetic distance and expression distance",
+      subtitle = paste("Adj R-sq = ",round(fit$adj.r.squared,digits = 2),
+                      "; p-value = ",signif(fit$coef[2,4], 5),
+                      "; slope = ",signif(fit$coef[2], 5))) 
+lm_plot
+```
+
+# EVE model
+To determine whether the presence of anemonefish or Symbiodiniaceae influenced the evolution of gene expression patterns we carried out a phylogenetic analysis of variance (phy-ANOVA) using the Expression Variance and Evolution model developed by Rohlfs and Nielsen (Rohlfs and Nielsen 2015). The model describes phylogenetic expression level evolution between species and expression level variance within species. This approach can test for lineage-specific expression shifts in specific lineages (Rohlfs and Nielsen 2015). The test can be considered a phylogenetic analogy to tests for genetic drift via ratios of between and within species (population) variance.  Expression data for orthologs in both up and down clusters and the species phylogeny were used to run the analysis.  
+Code is shown only for the up cluster. Change input data for the down cluster analysis.
+```{r,message=F}
+library(ape)
+library(evemodel)
+library(ggplot2)
+library(MASS)
+library(Rlab)
+library(evemodel)
+library(phytools)
+
+#Coseq result
+clusts<-readRDS("../data/rds/runArcsin_dge_up.rds")
+probapost <- assay(clusts)
+
+#Use both clusters
+c1<-probapost %>% as.data.frame() %>% rownames_to_column("OG") %>% filter(Cluster_1 >= 0.8)
+
+#get exp data
+final_orth_list<-read_csv("../data/orthologs/final_orth_list.csv")%>% drop_na() %>% filter(Orthogroup %in% c1$OG)
+
+#Same as the tpm10k data but only for the tentacles.
+#get only orthogroups in cluster
+dat <-read_csv("../data/data_tables/tentancles_exp_dat.csv") %>% filter(Orthogroup %in% final_orth_list$Orthogroup) %>% column_to_rownames("Orthogroup")#
+
+dat[is.na(dat)]<-0
+dat.mat<-as.matrix(log10(dat+1)) 
+
+#get tree
+tree<-read.nexus("../data/data_tables/rooted_cnidaria_tree")
+tree <- keep.tip(tree,unique(sub("[0-9]","",colnames(dat.mat))))
+
+#select edges with shift to test
+shiftyEdges_early = 1:Nedge(tree) %in% c(6:14,16:22)
+#plot(tree,edge.color = ifelse(shiftyEdges_early,"red","black"))
+
+#This snippet is from:  https://gitlab.com/sandve-lab/gillard-groenvold/-/blob/master/runEVE.R
+twoThetaRes2table <- function(res, OGIDs){
+  tibble( OG = OGIDs, 
+          LRT = res$LRT) %>% 
+    bind_cols(as_tibble(res$twoThetaRes$par)) %>% 
+    dplyr::rename( theta = theta1, thetaShift = theta2, sigma.sq = sigma2) %>% 
+    mutate( shift.direction = ifelse(thetaShift>theta, "up","down")) %>% 
+    mutate( pval = pchisq(LRT,df = 1,lower.tail = F)) %>% 
+    mutate( llTwoTheta = res$twoThetaRes$ll ) %>% 
+    mutate( llOneTheta = res$oneThetaRes$ll ) %>% 
+    mutate( isSig = pval < 0.05)
+}
+
+twoThetaRes <- twoThetaTest(tree = tree, gene.data = dat.mat, 
+                            isTheta2edge = shiftyEdges_early, cores = 2,
+                            colSpecies = sub("[0-9]","",colnames(dat.mat)))
+
+#twoThetaRes %>% saveRDS("./Transcriptomes/Clusters/twoThetaRes_dge_up_clust1.rds")
+
+resTbl<-twoThetaRes2table(twoThetaRes,rownames(dat)) %>% filter(isSig == "TRUE")
+  
+#resTbl %>% arrange(desc(thetaShift)) %>% filter(isSig == "TRUE") %>% write_csv("../data/data_tables/twoThetaRes_up_reg_cluster1.csv")
+
+ggplot(resTbl %>% group_by(shift.direction) %>% summarise(n_shifts = n()),aes(shift.direction,n_shifts))+
+  geom_col(fill = "darkgreen")+geom_text(aes(label = n_shifts),vjust = -0.2)+
+  theme_light()+
+  labs(title = "Shift direction of test from EVE model")
+
+ggplot(resTbl,aes(OG,thetaShift))+
+  geom_point(color = "turquoise4")+
+  theme(panel.background = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+
+```
+
+# GO term enrichment
+```{r,message=F}
+library(GOstats)
+library(GO.db)
+library(GSEABase)
+library(AnnotationDbi)
+library(RSQLite)
+
+annot<-read_csv("../data/data_tables/GO_annot_universe.csv")
+annot<-annot %>% filter(ARGOT_PPV >= 0.5)
+annot$goid<-sub("^","GO:",annot$goid)
+annot<-annot %>% mutate(evidence = "IEA") %>% dplyr::select(go_id = goid, evidence,gene = qpid) #keep this order
+goFrame<-GOFrame(as.data.frame(annot, organism = "hosts"))
+goAllFrame<-GOAllFrame(goFrame)
+gsc<-GeneSetCollection(goAllFrame,setType = GOCollection())
+universe<-annot$gene
+```
+
+
+### up-shift genes
+```{r,message=F}
+read_csv("../data/orthologs/final_orth_list.csv")%>% drop_na() -> final_orth_list
+
+#get upshift gene
+d<-rbind(read_csv("../data/data_tables/twoThetaRes_up_reg_cluster1.csv") %>% mutate(dir = "up") %>% mutate(cluster = "1"),
+         read_csv("../data/data_tables/twoThetaRes_up_reg_cluster2.csv") %>% mutate(dir = "up") %>% mutate(cluster = "2"))
+resTbl<-d %>% arrange(desc(thetaShift)) %>% filter(thetaShift >=1.7)
+
+upOGs<-tibble(ids = (resTbl)$OG)
+
+up_shift_gene<-tibble(ids= (final_orth_list %>% filter(Orthogroup %in% upOGs$ids) %>% 
+  dplyr::select(c(Orthogroup,enqua,heaur,hecri,hema,hetdac,macdac,stga,stha,stmer)) %>% 
+  pivot_longer(cols = c(!Orthogroup)))$value)
+
+up<-GSEAGOHyperGParams(name = "GO enrich", 
+                             geneSetCollection = gsc,
+                             geneIds = up_shift_gene$ids,
+                             universeGeneIds = universe,
+                             ontology = "BP",
+                             pvalueCutoff = 0.05,
+                             conditional = F,
+                             testDirection = "over")
+
+Over_up<- hyperGTest(up)
+
+Over_up.pv<-pvalues(Over_up)
+pv.fdr<-p.adjust(Over_up.pv,"fdr")
+summary(Over_up) %>% as_tibble() %>% mutate(FDR = pv.fdr[1:nrow(summary(Over_up) %>% as_tibble())]) %>% dplyr::select(GOBPID,FDR,Term,Size) %>% filter(FDR<=0.05) -> GOenrich
+GOenrich %>% write_csv("../data/data_tables/GOenrich_EVE_up_reg_clusters_top10_genes")
+```
+
+# PGMM
+The top ten orthologs that experienced the highest shifts in their expression throughout evolution (evolutionary divergent gene expression) were used for analysis using a phylogenetic multilevel model (PGMM). The PGMM was implemented using the brms R package (Bürkner 2017). The rationale of the PGMM is similar to that of independent contrasts implemented through phylogenetic least squares, where the relationship between species is modelled to estimate the effect of evolutionary relationships on character evolution (Felsenstein 1985). In PGMM, the relationship between  species is fit as a ‘Group level’ effect (random effect in the terminology of mixed models). The relationship between species is fit using a phylogenetic covariance matrix (Hadfield and Nakagawa 2010). In our approach, we ran an intercept only model where the mean of the response variable (gene expression of ten genes) is conditioned across group level effects of phylogeny, presence of anemonefish, and presence of Symbiodiniaceae. In other words, we estimate whether differences in gene expression between species are influenced by the presence of anemonefish and Symbiodiniaceae while accounting for the evolutionary relationships of the different cnidarian species.
+```{r,eval=F}
+library(brms)
+library(dplyr)
+library(ape)
+
+tree<-read.nexus("./Phylogenetics/rooted_cnidaria_tree")
+model_dat<-readRDS("../data/rds/model_dat_10genes.rds")
+
+#Phylogenetic covariance matrix for fitting phylogeny as a group-level effect
+A <- ape::vcv.phylo(tree)
+
+#Split data into two sets for quicker computation
+d1<-model_dat %>% dplyr::select(sp,fish,Symb,OG0006498,OG0000495,OG0005195,OG0003426,OG0006786)
+d2<-model_dat %>% dplyr::select(sp,fish,Symb,OG0005659,OG0005435,OG0005903,OG0004515,OG0005805)
+
+#model_function
+brm_model<-function(form,prior,data,family) {
+  m<-brm(formula = form,
+            prior = prior,
+            data = data,
+            data2 = list(A = A),
+            family = family,
+            iter = 5000,
+            warmup = 3000,
+            sample_prior = T,
+            chains = 5,
+            cores = 20,
+            save_pars = save_pars(all = TRUE),
+            control = list(adapt_delta = 0.9))
+
+  return(m)
+
+}
+
+#default priors
+priors_all_group_effects<-get_prior(formula = all_group_effects,
+                  data = d1,
+                  data2 = list(A = A),
+                  family = gaussian())
+priors_all_group_effects2<-get_prior(formula = all_group_effects2,
+                  data = d2,
+                  data2 = list(A = A),
+                  family = gaussian())
+
+#Write model formula
+all_group_effects<-bf(mvbind(OG0006498,OG0000495,OG0005195,OG0003426,OG0006786) ~ 1 + (1|fish) + (1|Symb) + (1|gr(sp, cov = A))) + set_rescor(FALSE)
+all_group_effects2<-bf(mvbind(OG0005659,OG0005435,OG0005903,OG0004515,OG0005805) ~ 1 + (1|fish) + (1|Symb) + (1|gr(sp, cov = A))) + set_rescor(FALSE)
+
+#Run model
+all_group_effects<-brm_model(form = all_group_effects,family = gaussian(),prior = priors_all_group_effects,data = d1)
+all_group_effects %>% saveRDS("./all_groups.rds")
+
+all_group_effects2<-brm_model(form = all_group_effects2,family = gaussian(),prior = priors_all_group_effects2,data = d2)
+all_group_effects2 %>% saveRDS("./all_groups2.rds")
+```

@@ -1,0 +1,163 @@
+GOBPID,FDR,Term,Size
+GO:0035329,6.397763412241156e-10,hippo signaling,32
+GO:0051252,9.156964496350548e-10,regulation of RNA metabolic process,863
+GO:0022900,9.156964496350548e-10,electron transport chain,37
+GO:0019219,1.0280223875511207e-9,regulation of nucleobase-containing compound metabolic process,886
+GO:2001141,3.2180717296266453e-9,regulation of RNA biosynthetic process,755
+GO:0006355,3.2180717296266453e-9,"regulation of transcription, DNA-templated",755
+GO:1903506,3.2180717296266453e-9,regulation of nucleic acid-templated transcription,755
+GO:0008285,6.356686610895907e-9,negative regulation of cell population proliferation,50
+GO:2000112,4.1157938122476865e-8,regulation of cellular macromolecule biosynthetic process,858
+GO:0010556,4.636764349717368e-8,regulation of macromolecule biosynthetic process,867
+GO:0031326,7.189406230221346e-8,regulation of cellular biosynthetic process,892
+GO:0006351,7.189406230221346e-8,"transcription, DNA-templated",899
+GO:0032774,7.189406230221346e-8,RNA biosynthetic process,899
+GO:0097659,7.189406230221346e-8,nucleic acid-templated transcription,899
+GO:0045944,7.594023901789718e-8,positive regulation of transcription by RNA polymerase II,70
+GO:0009889,7.594023901789718e-8,regulation of biosynthetic process,907
+GO:0006099,8.810777893917262e-8,tricarboxylic acid cycle,72
+GO:0009060,2.2793229741033209e-7,aerobic respiration,81
+GO:0045333,2.2793229741033209e-7,cellular respiration,81
+GO:0042127,3.3297879851529264e-7,regulation of cell population proliferation,85
+GO:0051171,4.073839265075556e-7,regulation of nitrogen compound metabolic process,1223
+GO:0080090,6.582939969053958e-7,regulation of primary metabolic process,1252
+GO:0031323,8.657908733173051e-7,regulation of cellular metabolic process,1270
+GO:0050794,1.0560669050783402e-6,regulation of cellular process,2999
+GO:0008283,1.4446786947219435e-6,cell population proliferation,103
+GO:0034654,1.4581144495021585e-6,nucleobase-containing compound biosynthetic process,1071
+GO:0019438,2.0356989990176468e-6,aromatic compound biosynthetic process,1091
+GO:0010468,3.0843257390217473e-6,regulation of gene expression,1117
+GO:0018130,3.0843257390217473e-6,heterocycle biosynthetic process,1118
+GO:1901362,3.2872138647617087e-6,organic cyclic compound biosynthetic process,1135
+GO:0010092,3.2872138647617087e-6,specification of animal organ identity,3
+GO:0046620,3.2872138647617087e-6,regulation of organ growth,3
+GO:0009950,3.2872138647617087e-6,dorsal/ventral axis specification,3
+GO:0031101,3.2872138647617087e-6,fin regeneration,3
+GO:0051351,3.2872138647617087e-6,positive regulation of ligase activity,3
+GO:0051340,3.2872138647617087e-6,regulation of ligase activity,3
+GO:0003170,3.2872138647617087e-6,heart valve development,3
+GO:0003173,3.2872138647617087e-6,ventriculo bulbo valve development,3
+GO:0003128,3.2872138647617087e-6,heart field specification,3
+GO:0003139,3.2872138647617087e-6,secondary heart field specification,3
+GO:0048566,3.2872138647617087e-6,embryonic digestive tract development,3
+GO:1905480,3.2872138647617087e-6,positive regulation of glutamate-ammonia ligase activity,3
+GO:1905478,3.2872138647617087e-6,regulation of glutamate-ammonia ligase activity,3
+GO:0016579,3.2872138647617087e-6,protein deubiquitination,121
+GO:0060255,3.4394468578588627e-6,regulation of macromolecule metabolic process,1395
+GO:0050789,5.053570100424821e-6,regulation of biological process,3206
+GO:0065007,5.053570100424821e-6,biological regulation,3553
+GO:0070646,7.612099053599495e-6,protein modification by small protein removal,135
+GO:0019222,9.710098993173388e-6,regulation of metabolic process,1471
+GO:0060914,1.1258727085130553e-5,heart formation,4
+GO:0035265,1.1258727085130553e-5,organ growth,4
+GO:0015980,1.2054556560814264e-5,energy derivation by oxidation of organic compounds,144
+GO:0045893,2.329592032101054e-5,"positive regulation of transcription, DNA-templated",157
+GO:1903508,2.329592032101054e-5,positive regulation of nucleic acid-templated transcription,157
+GO:1902680,2.329592032101054e-5,positive regulation of RNA biosynthetic process,157
+GO:0033500,2.5036695514189284e-5,carbohydrate homeostasis,5
+GO:0042593,2.5036695514189284e-5,glucose homeostasis,5
+GO:0010557,5.348745886185697e-5,positive regulation of macromolecule biosynthetic process,175
+GO:0051254,5.5055489482289554e-5,positive regulation of RNA metabolic process,176
+GO:0045935,5.929956595242008e-5,positive regulation of nucleobase-containing compound metabolic process,178
+GO:0031328,6.1017357945558605e-5,positive regulation of cellular biosynthetic process,179
+GO:0035556,6.327900492222059e-5,intracellular signal transduction,724
+GO:0016070,7.368044635033033e-5,RNA metabolic process,1647
+GO:0071772,7.368044635033033e-5,response to BMP,7
+GO:0071773,7.368044635033033e-5,cellular response to BMP stimulus,7
+GO:0009953,7.368044635033033e-5,dorsal/ventral pattern formation,7
+GO:0030509,7.368044635033033e-5,BMP signaling pathway,7
+GO:0009891,1.1290340712140843e-4,positive regulation of biosynthetic process,196
+GO:0044271,1.5998874842055073e-4,cellular nitrogen compound biosynthetic process,1445
+GO:0006091,2.2473731975501305e-4,generation of precursor metabolites and energy,216
+GO:0007492,2.2473731975501305e-4,endoderm development,10
+GO:0001570,2.2473731975501305e-4,vasculogenesis,10
+GO:0042246,2.2473731975501305e-4,tissue regeneration,10
+GO:0048565,2.2473731975501305e-4,digestive tract development,10
+GO:0034645,2.601883769889526e-4,cellular macromolecule biosynthetic process,1493
+GO:0009059,2.847840739775019e-4,macromolecule biosynthetic process,1502
+GO:0090304,3.011199468990671e-4,nucleic acid metabolic process,1789
+GO:0009798,3.6306581148525e-4,axis specification,12
+GO:0039022,3.6306581148525e-4,pronephric duct development,12
+GO:0048915,3.6306581148525e-4,posterior lateral line system development,12
+GO:0048916,3.6306581148525e-4,posterior lateral line development,12
+GO:0072176,3.6306581148525e-4,nephric duct development,12
+GO:0048881,3.6306581148525e-4,mechanosensory lateral line system development,12
+GO:0072073,4.5819107224086324e-4,kidney epithelium development,13
+GO:0048645,4.5819107224086324e-4,animal organ formation,13
+GO:0006357,7.843418327935531e-4,regulation of transcription by RNA polymerase II,260
+GO:0090630,0.0010397578715649692,activation of GTPase activity,17
+GO:0044260,0.0010744787523644553,cellular macromolecule metabolic process,3555
+GO:0048638,0.0011990933281550108,regulation of developmental growth,18
+GO:0035162,0.0011990933281550108,embryonic hemopoiesis,18
+GO:0010467,0.0016447989884334465,gene expression,1984
+GO:0051216,0.0018387485413487337,cartilage development,21
+GO:0061448,0.0018387485413487337,connective tissue development,21
+GO:0003406,0.0018387485413487337,retinal pigment epithelium development,21
+GO:0055123,0.0023945637340071157,digestive system development,23
+GO:0006139,0.002468524450495456,nucleobase-containing compound metabolic process,2038
+GO:0043085,0.0026944149709031964,positive regulation of catalytic activity,140
+GO:0006511,0.002773872604208879,ubiquitin-dependent protein catabolic process,315
+GO:0031016,0.002949580525724504,pancreas development,25
+GO:0019941,0.003104919654343167,modification-dependent protein catabolic process,321
+GO:0006366,0.003125510659760836,transcription by RNA polymerase II,323
+GO:0001889,0.003125510659760836,liver development,26
+GO:0040008,0.003125510659760836,regulation of growth,26
+GO:0061008,0.003125510659760836,hepaticobiliary system development,26
+GO:0003002,0.003125510659760836,regionalization,26
+GO:0043632,0.0031948835926117088,modification-dependent macromolecule catabolic process,325
+GO:0006725,0.0034832680224308145,cellular aromatic compound metabolic process,2094
+GO:0046483,0.003732523072343932,heterocycle metabolic process,2104
+GO:0031099,0.0037496907135442497,regeneration,28
+GO:1901360,0.0047586518072124315,organic cyclic compound metabolic process,2138
+GO:0044238,0.005257194897254363,primary metabolic process,5343
+GO:0048925,0.005257194897254363,lateral line system development,32
+GO:0048793,0.005257194897254363,pronephros development,32
+GO:0048882,0.005257194897254363,lateral line development,32
+GO:0048514,0.005257194897254363,blood vessel morphogenesis,32
+GO:0001501,0.005699827936817792,skeletal system development,33
+GO:0003007,0.0067007272241593994,heart morphogenesis,35
+GO:0044093,0.007106635380965514,positive regulation of molecular function,176
+GO:0048523,0.007284591886687615,negative regulation of cellular process,682
+GO:0044237,0.0076661236743693646,cellular metabolic process,5419
+GO:0051173,0.008410645701655143,positive regulation of nitrogen compound metabolic process,382
+GO:0060041,0.009346449524818374,retina development in camera-type eye,40
+GO:0048589,0.009346449524818374,developmental growth,40
+GO:0001822,0.009787310548181086,kidney development,41
+GO:0001655,0.009787310548181086,urogenital system development,41
+GO:0072001,0.009787310548181086,renal system development,41
+GO:0031325,0.011371923298568652,positive regulation of cellular metabolic process,403
+GO:0010604,0.01164993500605539,positive regulation of macromolecule metabolic process,405
+GO:0001568,0.012433844450272357,blood vessel development,45
+GO:0051603,0.013008053065183564,proteolysis involved in cellular protein catabolic process,413
+GO:0034613,0.01302138447362666,cellular protein localization,571
+GO:0070727,0.01309037497462977,cellular macromolecule localization,572
+GO:0043170,0.013937352077384349,macromolecule metabolic process,4399
+GO:0040007,0.014338860900031255,growth,48
+GO:0044257,0.015255424137699248,cellular protein catabolic process,426
+GO:0044249,0.015829311506010472,cellular biosynthetic process,2024
+GO:0009893,0.016656470268550737,positive regulation of metabolic process,433
+GO:1901576,0.018059104437731344,organic substance biosynthetic process,2047
+GO:0070848,0.018059104437731344,response to growth factor,53
+GO:0071363,0.018059104437731344,cellular response to growth factor stimulus,53
+GO:0009058,0.018743580663920706,biosynthetic process,2056
+GO:0001944,0.018743580663920706,vasculature development,54
+GO:0034641,0.01881906332418521,cellular nitrogen compound metabolic process,2380
+GO:0007420,0.019437110613624124,brain development,55
+GO:0030163,0.022872806200485263,protein catabolic process,460
+GO:0043010,0.023056000314575328,camera-type eye development,59
+GO:0043547,0.023056000314575328,positive regulation of GTPase activity,59
+GO:0009987,0.023176014050472853,cellular process,8729
+GO:0043066,0.02364747538024097,negative regulation of apoptotic process,60
+GO:0007178,0.02364747538024097,transmembrane receptor protein serine/threonine kinase signaling pathway,60
+GO:0048732,0.02679354940846527,gland development,63
+GO:0048519,0.02844680972200511,negative regulation of biological process,830
+GO:0043069,0.02995017045239003,negative regulation of programmed cell death,66
+GO:0007417,0.03200806683921382,central nervous system development,68
+GO:0060322,0.03200806683921382,head development,68
+GO:0001654,0.0328475518603491,eye development,69
+GO:0150063,0.0328475518603491,visual system development,69
+GO:0035239,0.03519927092256276,tube morphogenesis,71
+GO:0051345,0.04180701101790001,positive regulation of hydrolase activity,76
+GO:0071495,0.04298321273478499,cellular response to endogenous stimulus,77
+GO:0048646,0.04565304771384361,anatomical structure formation involved in morphogenesis,79
+GO:0009719,0.04839538411349382,response to endogenous stimulus,81

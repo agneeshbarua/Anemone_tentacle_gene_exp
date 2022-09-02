@@ -1,0 +1,212 @@
+GOBPID,FDR,Term,Size
+GO:0006367,3.478689318117026e-18,transcription initiation from RNA polymerase II promoter,28
+GO:0019405,1.5277931200289732e-12,alditol catabolic process,9
+GO:0044275,1.5277931200289732e-12,cellular carbohydrate catabolic process,9
+GO:0019563,1.5277931200289732e-12,glycerol catabolic process,9
+GO:0006878,1.5277931200289732e-12,cellular copper ion homeostasis,9
+GO:1901616,1.5277931200289732e-12,organic hydroxy compound catabolic process,9
+GO:0055070,1.5277931200289732e-12,copper ion homeostasis,9
+GO:0046164,1.5277931200289732e-12,alcohol catabolic process,9
+GO:0046174,1.5277931200289732e-12,polyol catabolic process,9
+GO:0006352,1.7342056583093276e-12,"DNA-templated transcription, initiation",55
+GO:0051276,2.5733331847404737e-11,chromosome organization,325
+GO:1990504,2.5733331847404737e-11,dense core granule exocytosis,8
+GO:0016079,2.5733331847404737e-11,synaptic vesicle exocytosis,8
+GO:0090481,2.5733331847404737e-11,pyrimidine nucleotide-sugar transmembrane transport,8
+GO:0007269,2.5733331847404737e-11,neurotransmitter secretion,8
+GO:0008643,2.5733331847404737e-11,carbohydrate transport,8
+GO:0015780,2.5733331847404737e-11,nucleotide-sugar transmembrane transport,8
+GO:0019400,1.4612327499404525e-10,alditol metabolic process,12
+GO:0006071,1.4612327499404525e-10,glycerol metabolic process,12
+GO:0099504,1.9135993340054187e-10,synaptic vesicle cycle,9
+GO:0017156,8.857855182842703e-10,calcium-ion regulated exocytosis,10
+GO:0035821,1.0478970711046251e-9,modulation of process of other organism,24
+GO:0099003,2.882648242797008e-9,vesicle-mediated transport in synapse,11
+GO:0032392,3.9084722671548335e-9,DNA geometric change,49
+GO:0032508,3.9084722671548335e-9,DNA duplex unwinding,49
+GO:0019474,1.5664136787135675e-8,L-lysine catabolic process to acetyl-CoA,18
+GO:0019477,1.5664136787135675e-8,L-lysine catabolic process,18
+GO:0033512,1.5664136787135675e-8,L-lysine catabolic process to acetyl-CoA via saccharopine,18
+GO:0006825,1.5664136787135675e-8,copper ion transport,18
+GO:0006553,1.5664136787135675e-8,lysine metabolic process,18
+GO:0006554,1.5664136787135675e-8,lysine catabolic process,18
+GO:0046440,1.5664136787135675e-8,L-lysine metabolic process,18
+GO:0035434,1.5664136787135675e-8,copper ion transmembrane transport,18
+GO:0006351,1.9525629592757736e-8,"transcription, DNA-templated",899
+GO:0032774,1.9525629592757736e-8,RNA biosynthetic process,899
+GO:0097659,1.9525629592757736e-8,nucleic acid-templated transcription,899
+GO:0007267,6.550080810080987e-8,cell-cell signaling,216
+GO:0006857,7.548812148945682e-8,oligopeptide transport,21
+GO:0046916,1.123315843147204e-7,cellular transition metal ion homeostasis,22
+GO:0031163,1.123315843147204e-7,metallo-sulfur cluster assembly,22
+GO:0016226,1.123315843147204e-7,iron-sulfur cluster assembly,22
+GO:0055076,1.123315843147204e-7,transition metal ion homeostasis,22
+GO:0009791,1.7120271003455098e-7,post-embryonic development,23
+GO:0090263,1.7120271003455098e-7,positive regulation of canonical Wnt signaling pathway,23
+GO:0071560,3.7847598354299727e-7,cellular response to transforming growth factor beta stimulus,25
+GO:0071559,3.7847598354299727e-7,response to transforming growth factor beta,25
+GO:0007179,3.7847598354299727e-7,transforming growth factor beta receptor signaling pathway,25
+GO:0099643,4.942899954225595e-7,signal release from synapse,19
+GO:0006836,4.942899954225595e-7,neurotransmitter transport,19
+GO:0009068,7.709492257303907e-7,aspartate family amino acid catabolic process,27
+GO:0006325,8.296890154103284e-7,chromatin organization,184
+GO:1901264,1.16276672648085e-6,carbohydrate derivative transport,21
+GO:0045055,1.16276672648085e-6,regulated exocytosis,21
+GO:0071103,1.924510753453441e-6,DNA conformation change,81
+GO:0016055,1.9564973772300765e-6,Wnt signaling pathway,134
+GO:1905114,1.9564973772300765e-6,cell surface receptor signaling pathway involved in cell-cell signaling,134
+GO:0015833,2.5957084226327877e-6,peptide transport,31
+GO:0044419,2.8583234812051816e-6,biological process involved in interspecies interaction between organisms,84
+GO:0007166,3.170586063444036e-6,cell surface receptor signaling pathway,434
+GO:0006790,3.1911163433889215e-06,sulfur compound metabolic process,139
+GO:0198738,3.4981403500203793e-06,cell-cell signaling by wnt,140
+GO:0019751,4.312626898903868e-6,polyol metabolic process,33
+GO:0048511,5.610160528688816e-6,rhythmic process,34
+GO:0045814,6.477073714178724e-6,"negative regulation of gene expression, epigenetic",4
+GO:0070828,6.477073714178724e-6,heterochromatin organization,4
+GO:0070584,6.477073714178724e-6,mitochondrion morphogenesis,4
+GO:0031507,6.477073714178724e-6,heterochromatin assembly,4
+GO:0034654,7.250016382399597e-6,nucleobase-containing compound biosynthetic process,1071
+GO:0006084,8.323621229908473e-6,acetyl-CoA metabolic process,36
+GO:0060828,8.323621229908473e-6,regulation of canonical Wnt signaling pathway,36
+GO:0016052,8.323621229908473e-6,carbohydrate catabolic process,36
+GO:0009066,8.323621229908473e-6,aspartate family amino acid metabolic process,36
+GO:0042554,1.0248222446178081e-5,superoxide anion generation,20
+GO:0019438,1.2541185306614568e-5,aromatic compound biosynthetic process,1091
+GO:0044282,1.2862201101546451e-5,small molecule catabolic process,155
+GO:0001505,1.3648814023124844e-5,regulation of neurotransmitter levels,29
+GO:0007163,1.6087642330477677e-5,establishment or maintenance of cell polarity,39
+GO:0030177,1.9918108602352248e-5,positive regulation of Wnt signaling pathway,40
+GO:0000041,2.449141162925658e-5,transition metal ion transport,41
+GO:0018130,2.6257823558904805e-5,heterocycle biosynthetic process,1118
+GO:0006366,2.648982575158605e-5,transcription by RNA polymerase II,323
+GO:0042886,3.588309257460289e-5,amide transport,43
+GO:1901362,4.1449520539346486e-5,organic cyclic compound biosynthetic process,1135
+GO:0023061,4.537925404281785e-5,signal release,34
+GO:0006468,5.035524712180794e-5,protein phosphorylation,717
+GO:0060070,5.079843260760353e-5,canonical Wnt signaling pathway,45
+GO:0006801,6.175240027118707e-5,superoxide metabolic process,26
+GO:0033875,7.052444413635378e-5,ribonucleoside bisphosphate metabolic process,47
+GO:0006637,7.052444413635378e-5,acyl-CoA metabolic process,47
+GO:0034032,7.052444413635378e-5,purine nucleoside bisphosphate metabolic process,47
+GO:2001141,7.80449991583433e-5,regulation of RNA biosynthetic process,755
+GO:0006355,7.80449991583433e-5,"regulation of transcription, DNA-templated",755
+GO:1903506,7.80449991583433e-5,regulation of nucleic acid-templated transcription,755
+GO:0016070,1.3586078956867527e-4,RNA metabolic process,1647
+GO:0000301,1.3586078956867527e-4,"retrograde transport, vesicle recycling within Golgi",3
+GO:0039531,1.3586078956867527e-4,regulation of viral-induced cytoplasmic pattern recognition receptor signaling pathway,3
+GO:0039532,1.3586078956867527e-4,negative regulation of viral-induced cytoplasmic pattern recognition receptor signaling pathway,3
+GO:0039535,1.3586078956867527e-4,regulation of RIG-I signaling pathway,3
+GO:0039536,1.3586078956867527e-4,negative regulation of RIG-I signaling pathway,3
+GO:0015871,1.3586078956867527e-4,choline transport,3
+GO:0034645,1.408536211739472e-4,cellular macromolecule biosynthetic process,1493
+GO:0070848,1.682403941961719e-4,response to growth factor,53
+GO:0071363,1.682403941961719e-4,cellular response to growth factor stimulus,53
+GO:0009059,1.682403941961719e-4,macromolecule biosynthetic process,1502
+GO:0033865,1.9164969695582834e-4,nucleoside bisphosphate metabolic process,54
+GO:0035383,1.9164969695582834e-4,thioester metabolic process,54
+GO:0006066,2.4911803428153935e-4,alcohol metabolic process,56
+GO:1901615,2.4911803428153935e-4,organic hydroxy compound metabolic process,56
+GO:0003015,2.4911803428153935e-4,heart process,8
+GO:0060047,2.4911803428153935e-4,heart contraction,8
+GO:0045944,2.759208284164818e-4,positive regulation of transcription by RNA polymerase II,70
+GO:0015931,3.492470673536905e-4,nucleobase-containing compound transport,46
+GO:0006875,3.687728293054949e-4,cellular metal ion homeostasis,59
+GO:0072593,3.753658383216464e-4,reactive oxygen species metabolic process,35
+GO:0007178,4.144260684850413e-4,transmembrane receptor protein serine/threonine kinase signaling pathway,60
+GO:0030003,6.778076447892653e-4,cellular cation homeostasis,64
+GO:0006873,6.778076447892653e-4,cellular ion homeostasis,64
+GO:0055085,8.766316880899031e-4,transmembrane transport,582
+GO:0055065,0.0010652262267497057,metal ion homeostasis,68
+GO:2000112,0.0012872055197533916,regulation of cellular macromolecule biosynthetic process,858
+GO:0030111,0.0013067443785249988,regulation of Wnt signaling pathway,70
+GO:0016310,0.001366339922418948,phosphorylation,1061
+GO:0051252,0.001428198344837672,regulation of RNA metabolic process,863
+GO:0023052,0.0015178461774418292,signaling,1536
+GO:0010556,0.001552387459492212,regulation of macromolecule biosynthetic process,867
+GO:0006099,0.001552387459492212,tricarboxylic acid cycle,72
+GO:0009063,0.0016946392545941485,cellular amino acid catabolic process,73
+GO:1901606,0.0016946392545941485,alpha-amino acid catabolic process,73
+GO:0090304,0.0017432116546199456,nucleic acid metabolic process,1789
+GO:0007268,0.0017432116546199456,chemical synaptic transmission,59
+GO:0099537,0.0017432116546199456,trans-synaptic signaling,59
+GO:0098916,0.0017432116546199456,anterograde trans-synaptic signaling,59
+GO:0006139,0.0017432116546199456,nucleobase-containing compound metabolic process,2038
+GO:0050821,0.0018717499220187624,protein stabilization,6
+GO:0034067,0.0018717499220187624,protein localization to Golgi apparatus,6
+GO:0055082,0.0019504857477137803,cellular chemical homeostasis,75
+GO:0099536,0.0021191461659335466,synaptic signaling,61
+GO:0019219,0.002252099389670016,regulation of nucleobase-containing compound metabolic process,886
+GO:0071495,0.002315549832965838,cellular response to endogenous stimulus,77
+GO:0007229,0.002315549832965838,integrin-mediated signaling pathway,62
+GO:0007154,0.0023421411186342715,cell communication,1566
+GO:0031326,0.0025257681502939286,regulation of cellular biosynthetic process,892
+GO:0043087,0.0027091984738718167,regulation of GTPase activity,112
+GO:0040029,0.0031017015804796996,"regulation of gene expression, epigenetic",15
+GO:0009719,0.003166744998172064,response to endogenous stimulus,81
+GO:0009060,0.003166744998172064,aerobic respiration,81
+GO:0045333,0.003166744998172064,cellular respiration,81
+GO:0009889,0.0034122739815261767,regulation of biosynthetic process,907
+GO:0055080,0.0034122739815261767,cation homeostasis,82
+GO:0006725,0.0037981846382619568,cellular aromatic compound metabolic process,2094
+GO:0046483,0.004349738550965471,heterocycle metabolic process,2104
+GO:0002753,0.004349738550965471,cytoplasmic pattern recognition receptor signaling pathway,8
+GO:0098586,0.004349738550965471,cellular response to virus,8
+GO:0039528,0.004349738550965471,cytoplasmic pattern recognition receptor signaling pathway in response to virus,8
+GO:0039529,0.004349738550965471,RIG-I signaling pathway,8
+GO:0006796,0.005230249786083007,phosphate-containing compound metabolic process,1618
+GO:0050801,0.0053023522538534484,ion homeostasis,88
+GO:0098771,0.0053023522538534484,inorganic ion homeostasis,88
+GO:0003013,0.005797473213793764,circulatory system process,18
+GO:0008015,0.005797473213793764,blood circulation,18
+GO:0000380,0.006563111513017803,"alternative mRNA splicing, via spliceosome",91
+GO:1901360,0.0067563014008915154,organic cyclic compound metabolic process,2138
+GO:0043170,0.0074560622627660314,macromolecule metabolic process,4399
+GO:0031647,0.008345015790015885,regulation of protein stability,10
+GO:0015695,0.008345015790015885,organic cation transport,10
+GO:0018393,0.00838151918396197,internal peptidyl-lysine acetylation,95
+GO:0018394,0.00838151918396197,peptidyl-lysine acetylation,95
+GO:0006475,0.00838151918396197,internal protein amino acid acetylation,95
+GO:0016573,0.00838151918396197,histone acetylation,95
+GO:0006793,0.008543239169246722,phosphorus metabolic process,1654
+GO:0019725,0.008888587200356434,cellular homeostasis,96
+GO:0050687,0.010502394677349109,negative regulation of defense response to virus,11
+GO:0050688,0.010502394677349109,regulation of defense response to virus,11
+GO:0002832,0.010502394677349109,negative regulation of response to biotic stimulus,11
+GO:0031348,0.010502394677349109,negative regulation of defense response,11
+GO:0050777,0.010502394677349109,negative regulation of immune response,11
+GO:0007155,0.01120467157215718,cell adhesion,100
+GO:0022610,0.01120467157215718,biological adhesion,100
+GO:0007165,0.013947955339247555,signal transduction,1469
+GO:0044271,0.01462299737951785,cellular nitrogen compound biosynthetic process,1445
+GO:0062207,0.01687449461083456,regulation of pattern recognition receptor signaling pathway,13
+GO:0016054,0.01783672956118848,organic acid catabolic process,108
+GO:0007167,0.01783672956118848,enzyme linked receptor protein signaling pathway,108
+GO:0046395,0.01783672956118848,carboxylic acid catabolic process,108
+GO:0044262,0.018806782093375222,cellular carbohydrate metabolic process,109
+GO:0007030,0.020406617184739455,Golgi organization,14
+GO:0010467,0.022930822225556584,gene expression,1984
+GO:0006887,0.023423340261241134,exocytosis,94
+GO:0043543,0.02566625487748155,protein acylation,135
+GO:0051336,0.025996121957350633,regulation of hydrolase activity,156
+GO:0140352,0.030752762223956603,export from cell,99
+GO:0032940,0.030752762223956603,secretion by cell,99
+GO:0048878,0.030991010628825807,chemical homeostasis,119
+GO:0006807,0.03315075196570657,nitrogen compound metabolic process,4807
+GO:0090630,0.03355202603965099,activation of GTPase activity,17
+GO:0030522,0.03355202603965099,intracellular receptor signaling pathway,17
+GO:0006473,0.03355202603965099,protein acetylation,121
+GO:0009101,0.035201509946813994,glycoprotein biosynthetic process,186
+GO:0043413,0.035201509946813994,macromolecule glycosylation,186
+GO:0006486,0.035201509946813994,protein glycosylation,186
+GO:0008152,0.03584730905656373,metabolic process,5894
+GO:0140546,0.03811626285395831,defense response to symbiont,18
+GO:0051607,0.03811626285395831,defense response to virus,18
+GO:0070085,0.038648296619524174,glycosylation,189
+GO:0018205,0.04285659773986873,peptidyl-lysine modification,127
+GO:0006397,0.04295738414497129,mRNA processing,332
+GO:0032990,0.04537971965982677,cell part morphogenesis,34
+GO:0046903,0.04563857663485267,secretion,108
+GO:0009100,0.046871544668534104,glycoprotein metabolic process,195
+GO:0002683,0.04886666991836952,negative regulation of immune system process,20
+GO:0032102,0.04886666991836952,negative regulation of response to external stimulus,20
