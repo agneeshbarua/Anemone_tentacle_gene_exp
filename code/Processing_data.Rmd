@@ -428,7 +428,7 @@ GGally::ggpairs(log10(t+1))
 
 ## Entacmea_quadricolor
 ```{r, message=F,eval=F}
-Enqua_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results/Equa_3_S3_L002/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
+Enqua_tpm_exp<-rbind(read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results/Equacla_3_S13_L001/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles1") %>% mutate(tpm10k = tpm*n()/10e4),
         read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_18_S2/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles2") %>% mutate(tpm10k = tpm*n()/10e4),
         read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_8_S10_L001/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles3") %>% mutate(tpm10k = tpm*n()/10e4),
         read_tsv(file.path(Kallisto_path,"Entacmea_quadricolor/results_2/Equacla_10_S13_L001/abundance.tsv")) %>% mutate(tissue = "Enqua_tentacles4") %>% mutate(tpm10k = tpm*n()/10e4),
