@@ -15,7 +15,7 @@ library(ggsci)
 ```{r,message=F}
 final_orth_list<-read_csv("../data/orthologs/final_orth_list.csv")%>% drop_na() %>% pivot_longer(!Orthogroup)
 
-#use dge gene, filter data to isolate genes that are consistently upregulated and downregulated in all samples
+#use dge gene, filter data to isolate genes that are consistently upregulated and downregulated in all samples. These are individual transcripts, not orthologs.
 dge_up<-read_csv("../data/data_tables/dge_all_hosts_vs_non_hosts_sig.csv") %>%  dplyr::select(!fdr) %>% spread(sp,logFC) %>% drop_na() %>% filter(if_all(where(is.numeric), ~ .x > 0) | !if_any(where(is.numeric), ~ .x < 0))
 
 dge_down<-read_csv("../data/data_tables/dge_all_hosts_vs_non_hosts_sig.csv") %>% dplyr::select(!fdr) %>% spread(sp,logFC) %>% drop_na() %>% filter(if_all(where(is.numeric), ~ .x < 0) | !if_any(where(is.numeric), ~ .x > 0))

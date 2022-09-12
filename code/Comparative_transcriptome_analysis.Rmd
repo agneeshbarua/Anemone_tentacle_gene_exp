@@ -208,6 +208,10 @@ corrplot::corrplot(cor(log10(t+1),method = "spearman"),
 ```
 
 # Clustering
+
+We performed hierarchical clustering analysis (HCA) to identify samples that group together. To determine whether the data supported the clusters, we used an HCA that provided significance levels on the nodes (Suzuki and Shimodaira 2006). Pvclust performs bootstrap analysis of clustering to provide a significance value to nodes, similar to that in phylogenetics. Pvclust provides two types of significance estimates: approximately unbiased (AU) p-values and bootstrap probability (BP). AU p-values have superiority in bias as compared to BP values. Standard 𝞪 = 0.05 (1 - 0.95) can be used as the threshold for statistical significance.  
+Boxed nodes denote highly supported nodes, such that branches leading from these nodes represent statistically supported clusters. The HCA captures similar trends to the correlation analysis with *Actinia tenebrosa*, *Anthopleura dowii*, and *Oulactis* sp clustering with giant sea anemone from *Heteractis*, *Stichodactyla*, and *Entacmaea* genera (Fig 1B). Although gene expression in *Heterodactyla hemprichii* and *Macrodactyla doreensis* tentacles correlated with those of other giant sea anemones, they do not form significant clusters in the HCA. Apart from *Macrodactyla doreensis*, giant sea anemone hosting clownfish from a significant cluster, suggesting high similarity in tentacle gene expression patterns. 
+
 ### Mean of all tentacles
 ```{r,eval=F}
 dat %>% dplyr::select(colnames(dat) %>% grep(pattern = "tent", value = T)) %>% round()->t
