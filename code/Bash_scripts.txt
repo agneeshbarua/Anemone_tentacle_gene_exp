@@ -127,13 +127,8 @@ cat ./blast_out/$name"_blast_res.tsv" |
 name=$(sed -n "$SLURM_ARRAY_TASK_ID"p namelist.txt)
 path="/flash/LaudetU/Agneesh/Anemone_host_project/06.BLAST_filtering/filtered_out_seqs"
 
-/apps/unit/LaudetU/TransDecoder-TransDecoder-v5.5.0/TransDecoder.Predict --single_best_only -t ${path}/$name"_symb_filter_out.fasta"\
-        --retain_pfam_hits $name"_pfam.domtblout"\
-        --retain_blastp_hits $name"_blastp.outfmt6"
-
-
+        #first get orfs
 /apps/unit/LaudetU/TransDecoder-TransDecoder-v5.5.0/TransDecoder.LongOrfs -t ${path}/$name"_symb_filter_out.fasta" -m 100
-
 
 ###Blastp###
 module load ncbi-blast/2.10.0+
@@ -151,6 +146,12 @@ blastp -query $name"_symb_filter_out.fasta.transdecoder_dir/longest_orfs.pep"\
 module load hmmer/3.1b2
 
 hmmscan --cpu 10 --domtblout $name"_pfam.domtblout" ./pfam_database/Pfam-A.hmm $name"_symb_filter_out.fasta.transdecoder_dir/longest_orfs.pep"
+
+##Final prediction##
+/apps/unit/LaudetU/TransDecoder-TransDecoder-v5.5.0/TransDecoder.Predict --single_best_only -t ${path}/$name"_symb_filter_out.fasta"\
+        --retain_pfam_hits $name"_pfam.domtblout"\
+        --retain_blastp_hits $name"_blastp.outfmt6"
+
 
 ###CD-HIT###
 module load cd-hit/2016-0304
