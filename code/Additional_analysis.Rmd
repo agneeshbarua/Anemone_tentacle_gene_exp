@@ -1,0 +1,391 @@
+---
+title: "Additional_Supplementary_analysis"
+output: html_document
+date: "2023-06-19"
+---
+
+```{r setup, include=FALSE,message=F}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(DESeq2)
+library(scales)
+library(ellipse)
+library(ggsci)
+library(GGally)
+library(sva)
+```
+
+```{r,message=F}
+dat <-read_csv("./Transcriptomes/Orthologs/all_sp_all_tissue_exp_matrix_new_tpm10k.csv")
+```
+
+## check cor all tissue and species
+```{r}
+dat %>% dplyr::select(!Orthogroup) %>% round()->t
+
+t = t[!apply(t, 1, anyNA),]
+#psych::corr.test(log10(t+1),method = "spearman",adjust = "BH")
+corrplot::corrplot(cor(log10(t+1),method = "spearman"),
+                   type = "upper",
+                   title = "\n\n\n",
+                   is.corr = F,
+                   order = "alphabet",
+                   col.lim = c(0.1,1),
+                   col = colorRampPalette(c("white", "lightgrey", "darkgreen"))(100),
+                   method = "shade",
+                   tl.col = "black",
+                   tl.cex = 0.6,
+                   diag = T)
+
+```
+
+## check cor between actinaria and hosts and non-hosts anemone tentacles
+```{r,eval=FALSE,message=F}
+dat %>% dplyr::select(Acte_tentacles1,
+               Acte_tentacles2,
+               Acte_tentacles3,
+               Neva_tentacles1,
+               Neva_tentacles2,
+               Neva_tentacles3,
+               Enqua_tentacles1,
+               Enqua_tentacles6,
+               Enqua_tentacles2,
+               Enqua_tentacles3,
+               Oula_tentacles1,
+               Oula_tentacles2,
+               Oula_tentacles3,
+               Hehe_tentalce_exo1,
+               Hehe_tentalce_exo2,
+               Mado_tentacle_i1,
+               Mado_tentacle_i2,
+               Mado_tentacle_o1,
+               Mado_tentacle_o2,
+               Stgag_tentacles1,
+               Stgag_tentacles2,
+               Stgag_tentacles3,
+               Stgag_tentacles4,
+               Stmer_tentacles1,
+               Stmer_tentacles2,
+               Stmer_tentacles3,
+               Stmer_tentacles4,
+               Sthad_tentacles1,
+               Sthad_tentacles1,
+               Sthad_tentacles3,
+               Heau_tentacles1,
+               Heau_tentacles2,
+               Heau_tentacles3,
+               Heau_tentacles4,
+               Heau_tentacles5,
+               Hecri_tentacles1,
+               Hecri_tentacles2,
+               Hecri_tentacles3,
+               Hecri_tentacles4,
+               Hemag_tentacles1,
+               Hemag_tentacles2,
+               Hemag_tentacles3,
+               Hemag_tentacles4,
+               Hemag_tentacles5,
+               Exadia_tentacles1,
+               Exadia_tentacles2,
+               Exadia_tentacles3) %>% round()->t
+t = t[!apply(t, 1, anyNA),]
+#psych::corr.test(log10(t+1),method = "spearman",adjust = "BH")
+
+corrplot::corrplot(cor(log10(t+1),method = "spearman"),
+                   type = "upper",
+                   title = "\n\n\n",
+                   is.corr = F,
+                   order = "alphabet",
+                   col.lim = c(0.1,1),
+                   col = colorRampPalette(c("white", "lightgrey", "darkgreen"))(100),
+                   method = "shade",
+                   tl.col = "black",
+                   tl.cex = 0.6,
+                   diag = T)
+```
+
+## check cor between only host anemone tentacles
+```{r,eval=FALSE,message=F}
+dat %>% dplyr::select(Enqua_tentacles1,
+               Enqua_tentacles2,
+               Enqua_tentacles3,
+               Enqua_tentacles4,
+               Enqua_tentacles5,
+               Enqua_tentacles6,
+               Hehe_tentalce_exo1,
+               Hehe_tentalce_exo2,
+               Mado_tentacle_i1,
+               Mado_tentacle_i2,
+               Mado_tentacle_o1,
+               Mado_tentacle_o2,
+               Stgag_tentacles1,
+               Stgag_tentacles2,
+               Stgag_tentacles3,
+               Stgag_tentacles4,
+               Stmer_tentacles1,
+               Stmer_tentacles2,
+               Stmer_tentacles3,
+               Stmer_tentacles4,
+               Sthad_tentacles1,
+               Sthad_tentacles1,
+               Sthad_tentacles3,
+               Heau_tentacles1,
+               Heau_tentacles2,
+               Heau_tentacles3,
+               Heau_tentacles4,
+               Heau_tentacles5,
+               Hecri_tentacles1,
+               Hecri_tentacles2,
+               Hecri_tentacles3,
+               Hecri_tentacles4,
+               Hemag_tentacles1,
+               Hemag_tentacles2,
+               Hemag_tentacles3,
+               Hemag_tentacles4,
+               Hemag_tentacles5) %>% round()->t
+t = t[!apply(t, 1, anyNA),]
+#psych::corr.test(log10(t+1),method = "spearman",adjust = "BH")
+
+corrplot::corrplot(cor(log10(t+1),method = "spearman"),
+                   type = "upper",
+                   title = "\n\n\n",
+                   is.corr = F,
+                   order = "alphabet",
+                   col.lim = c(0.1,1),
+                   col = colorRampPalette(c("white", "lightgrey", "darkgreen"))(100),
+                   method = "shade",
+                   tl.col = "black",
+                   tl.cex = 0.6,
+                   diag = T)
+```
+
+## Heirarchial clustering with mean of all tentacles
+```{r, eval=F}
+dat %>% dplyr::select(colnames(dat) %>% grep(pattern = "tent", value = T)) %>% round()->t
+t<-as.matrix(log10(t+1))
+gafu<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gafu")))
+acte<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Acte")))
+ando<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Ando")))
+chfle<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Chfle")))
+chfus<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Chfus")))
+cyca<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Cyca")))
+enqua<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Enqua")))
+heau<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Heau")))
+hecri<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hecri")))
+hehe<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hehe")))
+hemag<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hemag")))
+hyva<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hyva")))
+mado<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Mado")))
+neno<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neno")))
+neva<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neva")))
+oula<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Oula")))
+sama<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Sama")))
+stgag<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Stgag")))
+sthad<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Sthad")))
+stmer<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Stmer")))
+exadia<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Exadia")))
+cebra<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Cebra")))
+golob<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Golob")))
+gonor<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gonor")))
+gopla<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gopla")))
+isnoc<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Isnoc")))
+pabor<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Pabor")))
+
+
+dat_mat<-tibble(gafu,acte,ando,chfle,chfus,cyca,enqua,heau,hecri,hehe,hemag,hyva,mado,neno,neva,oula,sama,stgag,sthad,stmer,exadia,cebra,golob,gonor,gopla,isnoc,pabor)
+dat_mat[is.na(dat_mat)]<-0
+
+dist<-as.dist(1-cor(dat_mat,method = "spearman",use = "p"))
+plot(hclust(dist,method = "centroid"))
+
+#define sperman function to use in pvclust
+spearman <- function(x, ...) {
+    x <- as.matrix(x)
+    res <- as.dist(1 - cor(x, method = "spearman", use = "p"))
+    res <- as.dist(res)
+    attr(res, "method") <- "spearman"
+    return(res)
+}
+
+fit<-pvclust::pvclust(dat_mat,method.hclust = "complete",method.dist = spearman,nboot = 100)
+fit %>% saveRDS("./Transcriptomes/Clusters/pvclust_1k_bs_newdat.rds")
+```
+
+```{r}
+fit<-readRDS("./Transcriptomes/Clusters/pvclust_1k_bs_newdat.rds")
+plot(fit)+pvclust::pvrect(fit,alpha = 0.95)
+
+pvclust::seplot(fit)
+```
+
+#PCA
+## All Cnidaria samples
+```{r}
+dat <-read_csv("./Transcriptomes/Orthologs/all_sp_all_tissue_exp_matrix_new_tpm10k.csv")
+m<-dat %>% dplyr::select(!Orthogroup) %>% round()
+m<-log10(m+1)
+m = m[!apply(m, 1, anyNA),] #removed genes without expression
+m<-preprocessCore::normalize.quantiles(as.matrix(m))
+
+
+dm<-data.frame(tissue = c("body", "body", "body", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "mesentries", "mesentries", "mesentries", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "body", "nematosomes", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "body", "body", "body", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "mesentries", "mesentries", "mesentries", "nematosomes", "nematosomes", "nematosomes", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles", "tentacles",rep("tentacles",9)),
+               species = c(rep("gafu",9),rep("acte",9),"ando","chfle","chfus","cyca",
+                           rep("enqua",6),rep("heau",5),rep("hecri",4),rep("hehe",4),
+                           rep("hemag",5),rep("hyva",6), rep("mado",4),"neno",rep("neva",9),
+                           rep("oula",3),"sama",rep("stga",4),rep("stha",3),rep("stme",4),"cebra",rep("exadia",3),"golob","gonor","gopla","isnoc","pabor"))
+
+
+batch<-dm$species
+modcombat<-model.matrix(~1,data = as.data.frame(dm$species))
+combat_edata<-ComBat(dat = as.matrix(m), batch = batch,mod = modcombat,mean.only = F,
+                     par.prior = T,prior.plots = F)
+
+colnames(combat_edata)<-dm$species
+dm$tissue->id
+se<-SummarizedExperiment(combat_edata - rowMeans(combat_edata),colData = id)
+pcaDat<-plotPCA(DESeqTransform(se),intgroup = "X", ntop = 500, returnData=T)
+percentVar_all<-round(100 * attr(pcaDat,"percentVar"))
+names(pcaDat)[c(4,5)] = c("tissue","animal")
+pcaDat$animal<-dm$species
+pcaDat$tissue<-dm$tissue
+
+
+colfunc<-colorRampPalette(c("#6BA31E","#7192F0","#B1F059","#F06341","#A34A34"))
+plot<-ggplot(pcaDat,aes(PC1,PC2,color = animal))+
+  geom_point(aes(shape = tissue),size=3)+
+  scale_shape_manual(values = c(16,17,18,4))+
+  guides(color = guide_legend(override.aes = list(shape = 15)))+
+  scale_color_manual(values = c(colfunc(20)))+
+  theme_light()+
+  xlab(paste0("PC1 (",percentVar_all[1],"%)")) +
+  ylab(paste0("PC2 (",percentVar_all[2],"%)"))
+
+plot<-ggplot(pcaDat,aes(PC1,PC2,color = tissue, label = animal))+
+  geom_text()+
+  scale_color_d3()+
+  theme_light()+
+  xlab(paste0("PC1 (",percentVar_all[1],"%)")) +
+  ylab(paste0("PC2 (",percentVar_all[2],"%)"))
+
+plot
+```
+
+## PCA with mean of samples
+```{r}
+dat <-read_csv("./Transcriptomes/Orthologs/all_sp_all_tissue_exp_matrix_new_tpm10k.csv")
+dat %>% column_to_rownames("Orthogroup") %>% round()->t
+t<-as.matrix(log10(t+1))
+gafu_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gafu_tent")))
+gafu_body<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gafu_body")))
+acte_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Acte_tent")))
+acte_mes<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Acte_mes")))
+ando_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Ando_tent")))
+chfle_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Chfle_tent")))
+chfus_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Chfus_tent")))
+cyca_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Cyca_tent")))
+enqua_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Enqua_tent")))
+heau_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Heau_tent")))
+hecri_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hecri_tent")))
+hehe_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hehe_tent")))
+hehe_body<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hehe_body")))
+hehe_nema<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hehe_nema")))
+hemag_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hemag_tent")))
+hyva_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hyva_tent")))
+hyva_body<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Hyva_body")))
+mado_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Mado_tent")))
+neno_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neno_tent")))
+neva_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neva_tent")))
+neva_mes<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neva_mes")))
+neva_nema<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Neva_nema")))
+oula_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Oula_tent")))
+sama_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Sama_tent")))
+stgag_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Stgag_tent")))
+sthad_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Sthad_tent")))
+stmer_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Stmer_tent")))
+exadia_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Exadia_tent")))
+cebra_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Cebra_tent")))
+golob_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Golob_tent")))
+gonor_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gonor_tent")))
+gopla_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Gopla_tent")))
+isnoc_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Isnoc_tent")))
+pabor_tent<-rowMeans2(t,cols = c(colnames(t) %>% grep(pattern = "Pabor_tent")))
+
+dat_mat<-tibble(gafu_tent,gafu_body,acte_tent,acte_mes,ando_tent,
+                chfle_tent,chfus_tent,cyca_tent,enqua_tent,heau_tent,
+                hecri_tent,hehe_tent,hehe_body,hehe_nema,hemag_tent,
+                hyva_tent,hyva_body,mado_tent,neno_tent,neva_tent,
+                neva_mes,neva_nema,oula_tent,sama_tent,stgag_tent,sthad_tent,stmer_tent,exadia_tent,cebra_tent,golob_tent,gonor_tent,gopla_tent,isnoc_tent,pabor_tent)
+dat_mat[is.na(dat_mat)]<-0
+
+
+#m<-dat_mat %>% dplyr::select(acte_tent,ando_tent,chfle_tent,chfus_tent,cyca_tent,enqua_tent,gafu_tent,heau_tent,
+#                         hecri_tent,hehe_tent,hemag_tent,hyva_tent,mado_tent,neno_tent,neva_tent,oula_tent,sama_tent,
+#                         stgag_tent,sthad_tent,stmer_tent,acte_mes,neva_mes,gafu_body,hehe_body,hyva_body,hehe_nema,neva_nema)
+
+m<-dat_mat
+m<-m %>% dplyr::select(c(gafu_tent,
+                         acte_tent,
+                         ando_tent,
+                         cyca_tent,
+                         chfle_tent,
+                         chfus_tent,
+                         enqua_tent,
+                         heau_tent,
+                         hecri_tent,
+                         hehe_tent,
+                         hemag_tent,
+                         hyva_tent,
+                         mado_tent,
+                         neno_tent,
+                         neva_tent,
+                         oula_tent,
+                         sama_tent,
+                         stgag_tent,
+                         sthad_tent,
+                         stmer_tent,
+                         exadia_tent,
+                         cebra_tent,
+                         golob_tent,
+                         gonor_tent,
+                         gopla_tent,
+                         isnoc_tent,
+                         pabor_tent,
+                         hyva_body,
+                         hehe_body,
+                         gafu_body,
+                         acte_mes,
+                         neva_mes,
+                         hehe_nema,
+                         neva_nema))
+m = m[!apply(m, 1, anyNA),]
+
+m<-m %>% dplyr::select(-c(cyca_tent,chfle_tent,chfus_tent,neno_tent,sama_tent,cebra_tent,isnoc_tent,pabor_tent))
+m<-preprocessCore::normalize.quantiles(as.matrix(m))
+
+
+dm<-data.frame(
+           tissue = c(rep("tentacles",19),rep("body",3),rep("mesentries",2),rep("nematosomes",2)),
+           species = c("gafu","acte","ando","enqua","heau","hecri","hehe","hemag","hyva","mado","neva","oula","stgag","sthad","stmer","exadia","golob","gonor","gopla","hyva","hehe","gafu","acte","neva","hehe","neva"))
+
+#combat_edata<-as.matrix(m)
+batch<-dm$species
+modcombat<-model.matrix(~1,data = as.data.frame(dm$species))
+combat_edata<-ComBat(dat = as.matrix(m), batch = batch,mod = modcombat,mean.only = F,
+                    par.prior = T,prior.plots = F)
+colnames(combat_edata)<-dm$species
+se<-SummarizedExperiment(combat_edata- rowMeans(combat_edata),colData = dm$tissue)
+pcaDat<-plotPCA(DESeqTransform(se),intgroup = "X", ntop = 1000, returnData=T)
+percentVar_all<-round(100 * attr(pcaDat,"percentVar"))
+names(pcaDat)[c(4,5)] = c("tissue","animal")
+pcaDat$animal<-dm$species
+pcaDat$group<-dm$type
+
+plot<-ggplot(pcaDat,aes(PC1,PC2,color = tissue, label = animal))+
+  geom_text()+
+  scale_color_d3()+
+  theme_light()+
+  xlab(paste0("PC1 (",percentVar_all[1],"%)")) +
+  ylab(paste0("PC2 (",percentVar_all[2],"%)"))
+
+plot
+```
