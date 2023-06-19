@@ -1,0 +1,6 @@
+CAGEE 1.0
+Command line: /users/abarua/Modules/CAGEE-1.0/build/cagee --infile model_dat_CAGEE_input.tab --tree Species_tree_CAGEE.nwk --sigma_tree multirate_tree_CAGEE.nwk -D 400 --output_prefix output/multi_rate_one --cores 15 
+Final Likelihood (-lnL): 27408
+Sigma2: 0.84337047373904, 0.6435798439631, 0.98097414835937
+IDs of Nodes: ((<1>,(<2>,(<3>,(((<4>,(<5>,<6>)<28>)<27>,(<7>,<8>)<29>)<26>,(((<9>,<10>)<32>,<11>)<31>,(<12>,(<13>,<14>)<34>)<33>)<30>)<25>)<24>)<23>)<22>,((<15>,(((<16>,<17>)<39>,<18>)<38>,<19>)<37>)<36>,<20>)<35>)<21>
+260 values were attempted (0% rejected)
