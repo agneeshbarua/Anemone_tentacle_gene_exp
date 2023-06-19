@@ -46,6 +46,20 @@ Nematostella_vectensis,tentacle,ERR1368850,Anthozoa:Actinaria,https://pubmed.ncb
 Nematostella_vectensis,tentacle,ERR1368851,Anthozoa:Actinaria,https://pubmed.ncbi.nlm.nih.gov/27216622/
 Nemopilema_nomurai,tentacle,SRR6298212,Scyphozoa:Rhizostomatidae,https://www.ncbi.nlm.nih.gov/sra/?term=SRA627560/
 Oulactis_sp,tentacle,ERR2710216,Anthozoa:Actinaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJEB27893/
-Oulactis_sp,tentacle,ERR2710215,Anthozoa:Actinaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJEB27893/
+Oulactis_sp,tentacle,cp bas,Anthozoa:Actinaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJEB27893/
 Oulactis_sp,tentacle,ERR2710214,Anthozoa:Actinaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJEB27893/
 Sanderia_malayensis,tentacle,SRR6298216,Scyphozoa:Semaeostomeae,https://www.ncbi.nlm.nih.gov/sra/?term=SRA627560/
+,,,,
+Additional datasets,,,,
+Pachycerianthus_borealis,tentacle,SRR11802643,Anthozoa:Cerianaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA633022/
+Pachycerianthus_maua,tentacle,SRR11802640,Anthozoa:Cerianaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA633022/
+Isarachnathus_nocturnus,tentacle,SRR11802641,Anthozoa:Cerianaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA633022/
+Ceriantheomorphe_brasiliensis,tentacle,SRR11802642,Anthozoa:Cerianaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA633022/
+Exaiptasia_diaphana,tentacle,SRR13854845,Anthozoa:Actinaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA631085/
+Exaiptasia_diaphana,tentacle,SRR13854844,Anthozoa:Actinaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA631085/
+Exaiptasia_diaphana,tentacle,SRR13854843,Anthozoa:Actinaria,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA631085/
+Goniophora_lobata,tentacle,SRR18458550,Anthozoa:Scleractinia,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA818776/
+Goniopora_planulata,tentacle,SRR18458549,Anthozoa:Scleractinia,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA818776/
+Goniopora_norfolkensis,tentacle,SRR18458548,Anthozoa:Scleractinia,https://www.ncbi.nlm.nih.gov/bioproject/PRJNA818776/
+,,,,
+Data generated for the current study are waiting to be uploaded by NCBI. Once uploaded they can be found at PRJNA877849,,,,
