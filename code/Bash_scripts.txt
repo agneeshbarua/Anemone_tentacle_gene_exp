@@ -254,4 +254,29 @@ rule kallisto_quant:
         shell: "kallisto quant -i {input.idx} -o {output} -b 100 {input.r1} {input.r2}"
 
 
-The construction of the composite Symbiodiniaceae index was done using the above code. Pseudoalignment and quantification of Symbiodiniaceae composition was also done using  the above code. 
+The construction of the composite Symbiodiniaceae index was done using the above code. Pseudoalignment and quantification of Symbiodiniaceae composition was also done using the above code. 
+
+###CAGEE analysis###
+
+The following commands were used to run the CAGEE analysis
+
+module load gcc cmake eigen boost intel-mkl
+
+/users/abarua/Modules/CAGEE-1.0/build/cagee --infile model_dat_CAGEE_input.tab --tree Species_tree_CAGEE.nwk -D 400 --output_prefix output/single_rate --cores 10 
+
+/users/abarua/Modules/CAGEE-1.0/build/cagee --infile model_dat_CAGEE_input.tab --tree Species_tree_CAGEE.nwk --sigma_tree sigma_tree_CAGEE.nwk -D 400 --output_prefix output/two_rate --cores 10
+
+/users/abarua/Modules/CAGEE-1.0/build/cagee --infile model_dat_CAGEE_input.tab --tree Species_tree_CAGEE.nwk --sigma_tree multirate_tree_CAGEE.nwk -D 400 --output_prefix output_tpm/multi_rate --cores 10
+
+
+###Annotation of EVE shift genes###
+Get the Nematostella orthologs of the EVE shift genes and use them for annotation.
+
+blastp -query nema_high_theta_shift_seqs.fa\
+        -db /flash/LaudetU/Agneesh/Anemone_host_project/07.Transdecoder/database/swissprot\
+        -max_target_seqs 5\
+        -outfmt 6\
+        -evalue 1e-10\
+        -num_threads 10 > Nema_upreg_shifts_blastp.outfmt6
+        
+From the output file above, use the protein ids as input for Uniprot. Use only the 'reviewed' results for annotation.
